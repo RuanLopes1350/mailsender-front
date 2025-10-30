@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/header";
+import Footer from "@/components/footer";
 
 export const metadata: Metadata = {
   title: "Mail Sender",
@@ -16,9 +17,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className="bg-[#FFFFFF]">
+      <body className="bg-linear-to-r from-[#EEF2FF] to-[#FAF5FF]">
         <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );
