@@ -47,35 +47,55 @@ export default function Home() {
                   <TableCell>intel.spec.lopes@gmail.com</TableCell>
                   <TableCell>Recuperação de Senha - IFRO Events</TableCell>
                   <TableCell>generico</TableCell>
-                  <TableCell className="bg-[#DCFCE7]">Enviado</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#15803D]">
+                      Enviado
+                    </div>
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>24/10/2025, 16:18</TableCell>
                   <TableCell>intel.spec.lopes@gmail.com</TableCell>
                   <TableCell>Recuperação de Senha - IFRO Events</TableCell>
                   <TableCell>generico</TableCell>
-                  <TableCell className="bg-[#DCFCE7]">Enviado</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#15803D]">
+                      Enviado
+                    </div>
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>23/10/2025, 22:31</TableCell>
                   <TableCell>intel.spec.lopes@gmail.com</TableCell>
                   <TableCell>Compartilhamento de permissão - IFRO Events</TableCell>
                   <TableCell>generico</TableCell>
-                  <TableCell className="bg-[#DCFCE7]">Enviado</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#15803D]">
+                      Enviado
+                    </div>
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>23/10/2025, 22:31</TableCell>
                   <TableCell>dudutartas@gmail.com</TableCell>
                   <TableCell>Compartilhamento de permissão - IFRO Events</TableCell>
                   <TableCell>generico</TableCell>
-                  <TableCell className="bg-[#DCFCE7]">Enviado</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#15803D]">
+                      Enviado
+                    </div>
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>23/10/2025, 22:29</TableCell>
                   <TableCell>dudutartas@gmail.com</TableCell>
                   <TableCell>Bem-vindo ao IFRO Events!</TableCell>
                   <TableCell>bemvindo</TableCell>
-                  <TableCell className="bg-[#fcdcdc]">Falha</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#fcdcdc] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#801515]">
+                      Falha
+                    </div>
+                  </TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -107,7 +127,11 @@ export default function Home() {
                   <TableCell>$2b$15$LIm0/...</TableCell>
                   <TableCell>09/10/2025, 15:01</TableCell>
                   <TableCell>24/01/2025, 14:32</TableCell>
-                  <TableCell className="bg-[#DCFCE7]">Ativa</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#15803D]">
+                      Ativa
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="flex flex-row gap-2">
                       <img className='cursor-pointer' src="/activate.png" />
@@ -120,10 +144,14 @@ export default function Home() {
                   <TableCell>$2b$15$pEBA/...</TableCell>
                   <TableCell>24/10/2025, 16:17</TableCell>
                   <TableCell>24/01/2025, 14:32</TableCell>
-                  <TableCell className="bg-[#DCFCE7]">Ativa</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#15803D]">
+                      Ativa
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="flex flex-row gap-2">
-                      <img className='cursor-pointer' src="/activate.png"/>
+                      <img className='cursor-pointer' src="/activate.png" />
                       <img className='cursor-pointer' src="/erase.png" />
                     </div>
                   </TableCell>
@@ -133,10 +161,14 @@ export default function Home() {
                   <TableCell>$2b$15$Xv/0z...</TableCell>
                   <TableCell>26/10/2025, 02:35</TableCell>
                   <TableCell>24/01/2025, 14:32</TableCell>
-                  <TableCell className="bg-[#DCFCE7]">Inativa</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#fcdcdc] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#801515]">
+                      Inativa
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="flex flex-row gap-2">
-                      <img className='cursor-pointer' src="/activate.png" />
+                      <img className='cursor-pointer' src="/deactivate.png" />
                       <img className='cursor-pointer' src="/erase.png" />
                     </div>
                   </TableCell>
@@ -167,77 +199,121 @@ export default function Home() {
               <TableBody>
                 <TableRow>
                   <TableCell>25/01/2025, 14:32</TableCell>
-                  <TableCell>POST</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
+                      POST
+                    </div>
+                  </TableCell>
                   <TableCell>/api/send-email</TableCell>
                   <TableCell>200</TableCell>
                   <TableCell>Vitrine</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>25/01/2025, 09:15</TableCell>
-                  <TableCell>POST</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
+                      POST
+                    </div>
+                  </TableCell>
                   <TableCell>/api/send-email</TableCell>
                   <TableCell>200</TableCell>
                   <TableCell>IfroEvents</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>24/01/2025, 22:45</TableCell>
-                  <TableCell>GET</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#dcf4fc] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#156080]">
+                      GET
+                    </div>
+                  </TableCell>
                   <TableCell>/api/keys</TableCell>
                   <TableCell>200</TableCell>
                   <TableCell>Vitrine</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>24/01/2025, 16:20</TableCell>
-                  <TableCell>POST</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
+                      POST
+                    </div>
+                  </TableCell>
                   <TableCell>/api/send-email</TableCell>
                   <TableCell>200</TableCell>
                   <TableCell>IfroEvents</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>24/01/2025, 16:18</TableCell>
-                  <TableCell>POST</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
+                      POST
+                    </div>
+                  </TableCell>
                   <TableCell>/api/send-email</TableCell>
                   <TableCell>500</TableCell>
                   <TableCell>Vitrine</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>23/01/2025, 22:31</TableCell>
-                  <TableCell>POST</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
+                      POST
+                    </div>
+                  </TableCell>
                   <TableCell>/api/send-email</TableCell>
                   <TableCell>200</TableCell>
                   <TableCell>IfroEvents</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>23/01/2025, 22:31</TableCell>
-                  <TableCell>POST</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
+                      POST
+                    </div>
+                  </TableCell>
                   <TableCell>/api/send-email</TableCell>
                   <TableCell>200</TableCell>
                   <TableCell>Vitrine</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>23/01/2025, 22:31</TableCell>
-                  <TableCell>POST</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
+                      POST
+                    </div>
+                  </TableCell>
                   <TableCell>/api/send-email</TableCell>
                   <TableCell>200</TableCell>
                   <TableCell>IfroEvents</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>23/01/2025, 22:29</TableCell>
-                  <TableCell>POST</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
+                      POST
+                    </div>
+                  </TableCell>
                   <TableCell>/api/send-email</TableCell>
                   <TableCell>200</TableCell>
                   <TableCell>Vitrine</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>23/01/2025, 18:15</TableCell>
-                  <TableCell>PATCH</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#fbfcdc] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#808015]">
+                      PATCH
+                    </div>
+                  </TableCell>
                   <TableCell>/api/keys/toggle</TableCell>
                   <TableCell>200</TableCell>
                   <TableCell>IfroEvents</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>23/01/2025, 15:42</TableCell>
-                  <TableCell>DELETE</TableCell>
+                  <TableCell className="flex flex-row items-center justify-items-start">
+                    <div className="bg-[#fcdcdc] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#801515]">
+                      DELETE
+                    </div>
+                  </TableCell>
                   <TableCell>/api/dashboard/stats</TableCell>
                   <TableCell>200</TableCell>
                   <TableCell>Vitrine</TableCell>
