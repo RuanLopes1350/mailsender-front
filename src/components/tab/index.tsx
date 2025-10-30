@@ -1,19 +1,21 @@
 "use client";
+import { useState } from "react";
 
 interface TabProps {
     icon?: string;
     text: string;
     selected: boolean;
+    onSelect: () => void;
 }
 
-export default function Tab({ icon, text, selected }: TabProps) {
+export default function Tab({ icon, text, selected, onSelect }: TabProps) {
     const handleClick = () => {
         console.log(`Tab ${text} clicked`);
-        selected = true;
+        onSelect();
     }
     if (selected) {
         return (
-            <div className="bg-[#4F46E5] h-[58.8px] rounded-[10px] flex items-center justify-center gap-2 px-4 w-[318.15px]" onClick={handleClick}>
+            <div id={`tab-${text}`} className="bg-[#4F46E5] h-[58.8px] rounded-[10px] flex items-center justify-center gap-2 px-4 w-[318.15px] transition-all duration-300" onClick={handleClick}>
                 {icon && (
                     <img src={`${icon}-white.png`} />
                 )}
@@ -21,9 +23,9 @@ export default function Tab({ icon, text, selected }: TabProps) {
             </div>
         )
     }
-    
+
     return (
-        <div className="bg-[#ffffff] h-[58.8px] rounded-[10px] flex items-center justify-center gap-2 px-4 w-[318.15px] cursor-pointer hover:text-white hover:bg-[#aca8e1] transition-colors" onClick={handleClick}>
+        <div className="bg-[#ffffff] h-[58.8px] rounded-[10px] flex items-center justify-center gap-2 px-4 w-[318.15px] cursor-pointer hover:text-white hover:bg-[#aca8e1] transition-all duration-300" onClick={handleClick}>
             {icon && (
                 <img src={`${icon}-black.png`} />
             )}
