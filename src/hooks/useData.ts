@@ -1,0 +1,111 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import * as api from '@/services/apiClient';
+import type { GenerateApiKeyRequest, SendEmailRequest } from '@/types/api';
+
+// ==================== STATS & HEALTH ====================
+
+export const useHealthCheck = () => {
+    return useQuery({
+        queryKey: ['health'],
+        queryFn: api.getHealthCheck,
+    });
+};
+
+export const useStatus = () => {
+    return useQuery({
+        queryKey: ['status'],
+        queryFn: api.getStatus,
+    });
+};
+
+export const useGeneralStats = () => {
+    return useQuery({
+        queryKey: ['generalStats'],
+        queryFn: api.getGeneralStats,
+        refetchInterval: 30000, // Atualiza a cada 30 segundos
+    });
+};
+
+// ==================== API KEYS ====================
+
+export const useApiKeys = () => {
+    return useQuery({
+        queryKey: ['apiKeys'],
+        queryFn: api.listApiKeys,
+    });
+};
+
+export const useGenerateApiKey = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (request: GenerateApiKeyRequest) => api.generateApiKey(request),
+        onSuccess: () => {
+            // Invalida a query de API Keys para refetch
+            queryClient.invalidateQueries({ queryKey: ['apiKeys'] });
+        },
+    });
+};
+
+export const useRevokeApiKey = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (name: string) => api.revokeApiKey(name),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['apiKeys'] });
+        },
+    });
+};
+
+export const useDeactivateApiKey = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (name: string) => api.deactivateApiKey(name),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['apiKeys'] });
+        },
+    });
+};
+
+export const useReactivateApiKey = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (name: string) => api.reactivateApiKey(name),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['apiKeys'] });
+        },
+    });
+};
+
+// ==================== EMAILS ====================
+
+export const useRecentEmails = (limit: number = 10) => {
+    return useQuery({
+        queryKey: ['recentEmails', limit],
+        queryFn: () => api.getRecentEmails(limit),
+    });
+};
+
+export const useMyEmails = () => {
+    return useQuery({
+        queryKey: ['myEmails'],
+        queryFn: api.getMyEmails,
+    });
+};
+
+export const useSendEmail = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (request: SendEmailRequest) => api.sendEmail(request),
+        onSuccess: () => {
+            // Invalida queries relacionadas a emails
+            queryClient.invalidateQueries({ queryKey: ['recentEmails'] });
+            queryClient.invalidateQueries({ queryKey: ['myEmails'] });
+            queryClient.invalidateQueries({ queryKey: ['generalStats'] });
+        },
+    });
+};

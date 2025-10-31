@@ -4,9 +4,23 @@ import { useState } from "react";
 import Tab from "@/components/tab";
 import CardInfo from "@/components/card-info";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useGeneralStats, useApiKeys } from "@/hooks/useData";
+import { formatDate, EmailStatusBadge, ApiKeyStatusBadge, HttpMethodBadge, StatusCodeBadge } from "@/components/badges";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("Dashboard");
+
+  // Busca dados da API
+  const { data: stats, isLoading: loadingStats, error: errorStats } = useGeneralStats();
+  const { data: apiKeys, isLoading: loadingKeys, error: errorKeys } = useApiKeys();
+
+  // Debug
+  console.log('Stats:', stats);
+  console.log('Loading Stats:', loadingStats);
+  console.log('Error Stats:', errorStats);
+  console.log('API Keys:', apiKeys);
+  console.log('Loading Keys:', loadingKeys);
+  console.log('Error Keys:', errorKeys);
 
   return (
     <>
@@ -17,92 +31,64 @@ export default function Home() {
         <Tab icon='/logs' text='Logs Recentes' selected={activeTab === 'Logs Recentes'} onSelect={() => setActiveTab('Logs Recentes')} />
       </div>
 
+      {/* Dashboard */}
       {activeTab === 'Dashboard' && (
         <div>
-          <div className="flex flex-row gap-28 pl-18 pt-10 pb-10">
-            <CardInfo icon='/emails-dash.png' number={23} description="Total de emails" />
-            <CardInfo icon="/success-dash.png" number={21} description="Emails Enviados" />
-            <CardInfo icon="/fail-dash.png" number={2} description="Emails Falhados" />
-            <CardInfo icon="/logs-dash.png" number={2459} description="Total de Requisições" />
-          </div>
+          {loadingStats ? (
+            <div className="text-center p-10">Carregando...</div>
+          ) : errorStats ? (
+            <div className="text-center p-10 text-red-500">Erro ao carregar dados: {errorStats.message}</div>
+          ) : (
+            <>
+              <div className="flex flex-row gap-28 pl-18 pt-10 pb-10">
+                <CardInfo icon='/emails-dash.png' number={stats?.emails.total || 0} description="Total de emails" />
+                <CardInfo icon="/success-dash.png" number={stats?.emails.enviados || 0} description="Emails Enviados" />
+                <CardInfo icon="/fail-dash.png" number={stats?.emails.falhados || 0} description="Emails Falhados" />
+                <CardInfo icon="/logs-dash.png" number={stats?.requests.total || 0} description="Total de Requisições" />
+              </div>
 
-          <div className="bg-white rounded-2xl border p-10 mx-17">
-            <div className="flex flex-row items-center gap-2">
-              <img className="h-[24px] w-[24px]" src="/recents-purple.png" />
-              <h1 className="font-bold text-2xl">Emails Recentes</h1>
-            </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Para</TableHead>
-                  <TableHead>Assunto</TableHead>
-                  <TableHead>Template</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell>24/10/2025, 16:20</TableCell>
-                  <TableCell>intel.spec.lopes@gmail.com</TableCell>
-                  <TableCell>Recuperação de Senha - IFRO Events</TableCell>
-                  <TableCell>generico</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#15803D]">
-                      Enviado
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>24/10/2025, 16:18</TableCell>
-                  <TableCell>intel.spec.lopes@gmail.com</TableCell>
-                  <TableCell>Recuperação de Senha - IFRO Events</TableCell>
-                  <TableCell>generico</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#15803D]">
-                      Enviado
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>23/10/2025, 22:31</TableCell>
-                  <TableCell>intel.spec.lopes@gmail.com</TableCell>
-                  <TableCell>Compartilhamento de permissão - IFRO Events</TableCell>
-                  <TableCell>generico</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#15803D]">
-                      Enviado
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>23/10/2025, 22:31</TableCell>
-                  <TableCell>dudutartas@gmail.com</TableCell>
-                  <TableCell>Compartilhamento de permissão - IFRO Events</TableCell>
-                  <TableCell>generico</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#15803D]">
-                      Enviado
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>23/10/2025, 22:29</TableCell>
-                  <TableCell>dudutartas@gmail.com</TableCell>
-                  <TableCell>Bem-vindo ao IFRO Events!</TableCell>
-                  <TableCell>bemvindo</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#fcdcdc] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#801515]">
-                      Falha
-                    </div>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </div>
+              <div className="bg-white rounded-2xl border p-10 mx-17">
+                <div className="flex flex-row items-center gap-2">
+                  <img className="h-[24px] w-[24px]" src="/recents-purple.png" />
+                  <h1 className="font-bold text-2xl">Emails Recentes</h1>
+                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Data</TableHead>
+                      <TableHead>Para</TableHead>
+                      <TableHead>Assunto</TableHead>
+                      <TableHead>Template</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {stats?.recentEmails && stats.recentEmails.length > 0 ? (
+                      stats.recentEmails.map((email, index) => (
+                        <TableRow key={email._id || `email-${index}`}>
+                          <TableCell>{formatDate(email.createdAt)}</TableCell>
+                          <TableCell>{email.to}</TableCell>
+                          <TableCell>{email.subject}</TableCell>
+                          <TableCell>{email.template}</TableCell>
+                          <TableCell className="flex flex-row items-center justify-items-start">
+                            <EmailStatusBadge status={email.status} />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center">Nenhum email encontrado</TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
+          )}
         </div>
       )}
 
+      {/* API Keys */}
       {activeTab === 'API Keys' && (
         <div>
           <div className="bg-white rounded-2xl border mt-10 p-10 mx-17">
@@ -110,216 +96,97 @@ export default function Home() {
               <img className="h-[24px] w-[24px]" src="/recents-purple.png" />
               <h1 className="font-bold text-2xl">Gerenciar API Keys</h1>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Prefixo</TableHead>
-                  <TableHead>Criada em</TableHead>
-                  <TableHead>Última vez utilizada</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell>Vitrine</TableCell>
-                  <TableCell>$2b$15$LIm0/...</TableCell>
-                  <TableCell>09/10/2025, 15:01</TableCell>
-                  <TableCell>24/01/2025, 14:32</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#15803D]">
-                      Ativa
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-row gap-2">
-                      <img className='cursor-pointer' src="/activate.png" />
-                      <img className='cursor-pointer' src="/erase.png" />
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>IfroEvents</TableCell>
-                  <TableCell>$2b$15$pEBA/...</TableCell>
-                  <TableCell>24/10/2025, 16:17</TableCell>
-                  <TableCell>24/01/2025, 14:32</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#15803D]">
-                      Ativa
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-row gap-2">
-                      <img className='cursor-pointer' src="/activate.png" />
-                      <img className='cursor-pointer' src="/erase.png" />
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Teste</TableCell>
-                  <TableCell>$2b$15$Xv/0z...</TableCell>
-                  <TableCell>26/10/2025, 02:35</TableCell>
-                  <TableCell>24/01/2025, 14:32</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#fcdcdc] p-2 w-[70px] rounded-4xl flex flex-row items-center justify-center text-[#801515]">
-                      Inativa
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-row gap-2">
-                      <img className='cursor-pointer' src="/deactivate.png" />
-                      <img className='cursor-pointer' src="/erase.png" />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            {loadingKeys ? (
+              <div className="text-center p-10">Carregando...</div>
+            ) : errorKeys ? (
+              <div className="text-center p-10 text-red-500">Erro ao carregar API Keys: {errorKeys.message}</div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Prefixo</TableHead>
+                    <TableHead>Criada em</TableHead>
+                    <TableHead>Última vez utilizada</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {apiKeys && apiKeys.length > 0 ? (
+                    apiKeys.map((key, index) => (
+                      <TableRow key={key._id || `apikey-${index}`}>
+                        <TableCell>{key.nome}</TableCell>
+                        <TableCell>{key.prefixo}</TableCell>
+                        <TableCell>{formatDate(key.criadoEm)}</TableCell>
+                        <TableCell>{key.ultimoUso ? formatDate(key.ultimoUso) : 'Nunca'}</TableCell>
+                        <TableCell className="flex flex-row items-center justify-items-start">
+                          <ApiKeyStatusBadge isActive={key.ativa} />
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-row gap-2">
+                            <img className='cursor-pointer' src={key.ativa ? "/deactivate.png" : "/activate.png"} />
+                            <img className='cursor-pointer' src="/erase.png" />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center">Nenhuma API Key encontrada</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            )}
           </div>
         </div>
       )}
 
+      {/* Emails */}
+
+      {/* Logs Recentes */}
       {activeTab === 'Logs Recentes' && (
         <div>
           <div className="bg-white rounded-2xl border mt-10 p-10 mx-17">
             <div className="flex flex-row items-center gap-2">
               <img className="h-[24px] w-[24px]" src="/recents-purple.png" />
-              <h1 className="font-bold text-2xl">Gerenciar API Keys</h1>
+              <h1 className="font-bold text-2xl">Logs Recentes</h1>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Data/Hora</TableHead>
-                  <TableHead>Método</TableHead>
-                  <TableHead>Endpoint</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Usuário</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell>25/01/2025, 14:32</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
-                      POST
-                    </div>
-                  </TableCell>
-                  <TableCell>/api/send-email</TableCell>
-                  <TableCell>200</TableCell>
-                  <TableCell>Vitrine</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>25/01/2025, 09:15</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
-                      POST
-                    </div>
-                  </TableCell>
-                  <TableCell>/api/send-email</TableCell>
-                  <TableCell>200</TableCell>
-                  <TableCell>IfroEvents</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>24/01/2025, 22:45</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#dcf4fc] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#156080]">
-                      GET
-                    </div>
-                  </TableCell>
-                  <TableCell>/api/keys</TableCell>
-                  <TableCell>200</TableCell>
-                  <TableCell>Vitrine</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>24/01/2025, 16:20</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
-                      POST
-                    </div>
-                  </TableCell>
-                  <TableCell>/api/send-email</TableCell>
-                  <TableCell>200</TableCell>
-                  <TableCell>IfroEvents</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>24/01/2025, 16:18</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
-                      POST
-                    </div>
-                  </TableCell>
-                  <TableCell>/api/send-email</TableCell>
-                  <TableCell>500</TableCell>
-                  <TableCell>Vitrine</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>23/01/2025, 22:31</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
-                      POST
-                    </div>
-                  </TableCell>
-                  <TableCell>/api/send-email</TableCell>
-                  <TableCell>200</TableCell>
-                  <TableCell>IfroEvents</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>23/01/2025, 22:31</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
-                      POST
-                    </div>
-                  </TableCell>
-                  <TableCell>/api/send-email</TableCell>
-                  <TableCell>200</TableCell>
-                  <TableCell>Vitrine</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>23/01/2025, 22:31</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
-                      POST
-                    </div>
-                  </TableCell>
-                  <TableCell>/api/send-email</TableCell>
-                  <TableCell>200</TableCell>
-                  <TableCell>IfroEvents</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>23/01/2025, 22:29</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#DCFCE7] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#15803D]">
-                      POST
-                    </div>
-                  </TableCell>
-                  <TableCell>/api/send-email</TableCell>
-                  <TableCell>200</TableCell>
-                  <TableCell>Vitrine</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>23/01/2025, 18:15</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#fbfcdc] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#808015]">
-                      PATCH
-                    </div>
-                  </TableCell>
-                  <TableCell>/api/keys/toggle</TableCell>
-                  <TableCell>200</TableCell>
-                  <TableCell>IfroEvents</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>23/01/2025, 15:42</TableCell>
-                  <TableCell className="flex flex-row items-center justify-items-start">
-                    <div className="bg-[#fcdcdc] p-2 w-[70px] rounded-xl flex flex-row items-center justify-center text-[#801515]">
-                      DELETE
-                    </div>
-                  </TableCell>
-                  <TableCell>/api/dashboard/stats</TableCell>
-                  <TableCell>200</TableCell>
-                  <TableCell>Vitrine</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            {loadingStats ? (
+              <div className="text-center p-10">Carregando...</div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Data/Hora</TableHead>
+                    <TableHead>Método</TableHead>
+                    <TableHead>Endpoint</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Usuário</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {stats?.recentActivity && stats.recentActivity.length > 0 ? (
+                    stats.recentActivity.map((log, index) => (
+                      <TableRow key={log._id || `log-${index}`}>
+                        <TableCell>{formatDate(log.createdAt)}</TableCell>
+                        <TableCell className="flex flex-row items-center justify-items-start">
+                          <HttpMethodBadge method={log.method} />
+                        </TableCell>
+                        <TableCell>{log.path}</TableCell>
+                        <TableCell><StatusCodeBadge code={log.statusCode} /></TableCell>
+                        <TableCell>{log.apiKeyUser || 'N/A'}</TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center">Nenhum log encontrado</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            )}
           </div>
         </div>
       )}
