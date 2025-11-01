@@ -21,7 +21,40 @@ const apiClient = axios.create({
     },
 });
 
-// Interceptor para adicionar API Key se necessário
+// Interceptor para adicionar token automaticamente em todas as requisições
+apiClient.interceptors.request.use(
+    (config) => {
+        // Pega o token do localStorage
+        if (typeof window !== 'undefined') {
+            const token = localStorage.getItem('auth_token');
+            if (token && config.headers) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// Interceptor para tratar erros de autenticação
+apiClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        // Se receber 401 (não autorizado), redireciona para login
+        if (error.response?.status === 401) {
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('auth_user');
+                window.location.href = '/login';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
+// Funções auxiliares para gerenciar API Key
 export const setApiKey = (apiKey: string) => {
     apiClient.defaults.headers.common['x-api-key'] = apiKey;
 };
@@ -29,6 +62,15 @@ export const setApiKey = (apiKey: string) => {
 export const removeApiKey = () => {
     delete apiClient.defaults.headers.common['x-api-key'];
 };
+
+// Funções auxiliares para gerenciar token JWT (usadas pelo AuthContext)
+export const setJwtToken = (token: string) => {
+    apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
+
+export const removeJwtToken = () => {
+    delete apiClient.defaults.headers.common['Authorization'];
+}
 
 // ==================== STATS & HEALTH ====================
 

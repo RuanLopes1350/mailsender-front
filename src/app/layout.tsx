@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import QueryProvider from "@/providers/queryProvider";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 export const metadata: Metadata = {
   title: "Mail Sender",
@@ -19,11 +20,13 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className="bg-linear-to-r from-[#EEF2FF] to-[#FAF5FF]">
-        <QueryProvider>
-          <Header />
-          {children}
-          <Footer />
-        </QueryProvider>
+        <AuthProvider>
+          <QueryProvider>
+            <Header />
+            {children}
+            <Footer />
+          </QueryProvider>
+        </AuthProvider>
       </body>
     </html>
   );

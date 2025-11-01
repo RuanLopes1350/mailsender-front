@@ -84,3 +84,31 @@ export interface SendEmailResponse {
     message: string;
     emailId: string;
 }
+
+// ==================== AUTH ====================
+
+export interface LoginRequest {
+    email: string;
+    password: string;
+}
+
+export interface LoginResponse {
+    success?: boolean;
+    message?: string;
+    token?: string;
+    user?: {
+        id?: string;
+        email?: string;
+        name?: string;
+        username?: string;
+    };
+    // Campos alternativos que o backend pode retornar
+    mensagem?: string;
+    usuario?: any;
+}
+
+export interface User {
+    id: string;
+    email: string;
+    name?: string;
+}
