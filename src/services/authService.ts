@@ -6,14 +6,10 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URI || 'http://localhost:5016/api';
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
 
-/**
- * Serviço de Autenticação
- * Gerencia login, logout e armazenamento de token
- */
+// Serviço de Autenticação
+// Gerencia login, logout e armazenamento de token/
 export const authService = {
-    /**
-     * Realiza login e armazena o token
-     */
+    // Realiza login e armazena o token
     async login(username: string, password: string): Promise<LoginResponse> {
         try {
             const { data } = await axios.post<any>(
@@ -55,41 +51,35 @@ export const authService = {
         } catch (error: any) {
             console.error('Erro na requisição de login:', error);
             console.error('Response data:', error.response?.data);
-            
+
             // Se o erro tem uma resposta do servidor
             if (error.response?.data) {
                 throw new Error(
-                    error.response.data.message || 
-                    error.response.data.mensagem || 
+                    error.response.data.message ||
+                    error.response.data.mensagem ||
                     error.response.data.error ||
                     'Erro ao fazer login'
                 );
             }
-            
+
             throw new Error('Erro ao conectar com o servidor');
         }
     },
 
-    /**
-     * Faz logout e limpa os dados
-     */
+    // Faz logout e limpa os dados 
     logout(): void {
         this.removeToken();
         this.removeUser();
     },
 
-    /**
-     * Salva o token no localStorage
-     */
+    // Salva o token no localStorage
     setToken(token: string): void {
         if (typeof window !== 'undefined') {
             localStorage.setItem(TOKEN_KEY, token);
         }
     },
 
-    /**
-     * Recupera o token do localStorage
-     */
+    // Recupera o token do localStorage
     getToken(): string | null {
         if (typeof window !== 'undefined') {
             return localStorage.getItem(TOKEN_KEY);
@@ -97,27 +87,21 @@ export const authService = {
         return null;
     },
 
-    /**
-     * Remove o token do localStorage
-     */
+    // Remove o token do localStorage
     removeToken(): void {
         if (typeof window !== 'undefined') {
             localStorage.removeItem(TOKEN_KEY);
         }
     },
 
-    /**
-     * Salva os dados do usuário no localStorage
-     */
+    // Salva os dados do usuário no localStorage
     setUser(user: any): void {
         if (typeof window !== 'undefined') {
             localStorage.setItem(USER_KEY, JSON.stringify(user));
         }
     },
 
-    /**
-     * Recupera os dados do usuário do localStorage
-     */
+    // Recupera os dados do usuário do localStorage
     getUser(): any | null {
         if (typeof window !== 'undefined') {
             const user = localStorage.getItem(USER_KEY);
@@ -126,18 +110,14 @@ export const authService = {
         return null;
     },
 
-    /**
-     * Remove os dados do usuário do localStorage
-     */
+    // Remove os dados do usuário do localStorage
     removeUser(): void {
         if (typeof window !== 'undefined') {
             localStorage.removeItem(USER_KEY);
         }
     },
 
-    /**
-     * Verifica se o usuário está autenticado
-     */
+    // Verifica se o usuário está autenticado
     isAuthenticated(): boolean {
         return this.getToken() !== null;
     },
