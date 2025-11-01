@@ -13,13 +13,15 @@ interface AuthPanelProps {
 
 export default function AuthPanel({ titulo, subtitulo, rodape, rodapeLink, rodapeLinkTexto, altura, largura, children }: AuthPanelProps) {
     return (
-        <div className={`bg-white ${largura} ${altura} p-10`}>
-            <h1 className="text-[20px] font-bold">{titulo}</h1>
+        <div className={`bg-white ${largura} ${altura} p-6 sm:p-8 md:p-10 rounded-[10px] shadow-2xl`}>
+            <h1 className="text-[18px] sm:text-[20px] font-bold">{titulo}</h1>
             {subtitulo && (
-                <p>{subtitulo}</p>
+                <p className="text-sm sm:text-base">{subtitulo}</p>
             )}
             {children}
-            <p className="text-[11px] text-[#4B5563]">{rodape} {rodapeLink && rodapeLinkTexto && <Link className="text-[#4F46E5]" href={rodapeLink}>{rodapeLinkTexto}</Link>}</p>
+            <div className="flex items-center justify-center">
+                <p className="text-[10px] sm:text-[11px] text-[#4B5563] text-center">{rodape} {rodapeLink && rodapeLinkTexto && <Link className="text-[#4F46E5]" href={rodapeLink}>{rodapeLinkTexto}</Link>}</p>
+            </div>
         </div>
     )
 }
