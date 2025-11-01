@@ -3,7 +3,7 @@
 export interface EmailStats {
     total: number;
     enviados: number;
-    falhados: number;
+    falhas: number;
 }
 
 export interface RequestStats {

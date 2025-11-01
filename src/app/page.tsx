@@ -76,7 +76,7 @@ export default function Home() {
               <div className="flex flex-row gap-28 pl-18 pt-10 pb-10">
                 <CardInfo icon='/emails-dash.png' number={stats?.emails.total || 0} description="Total de emails" />
                 <CardInfo icon="/success-dash.png" number={stats?.emails.enviados || 0} description="Emails Enviados" />
-                <CardInfo icon="/fail-dash.png" number={stats?.emails.falhados || 0} description="Emails Falhados" />
+                <CardInfo icon="/fail-dash.png" number={stats?.emails.falhas || 0} description="Emails Falhados" />
                 <CardInfo icon="/logs-dash.png" number={stats?.requests.total || 0} description="Total de Requisições" />
               </div>
 
