@@ -65,6 +65,8 @@ export interface StatusResponse {
 
 export interface GenerateApiKeyRequest {
     name: string;
+    email: string;
+    pass: string;
 }
 
 export interface GenerateApiKeyResponse {

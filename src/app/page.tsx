@@ -4,8 +4,9 @@ import { useState } from "react";
 import Tab from "@/components/tab";
 import CardInfo from "@/components/card-info";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useGeneralStats, useApiKeys } from "@/hooks/useData";
+import { useGeneralStats, useApiKeys, useDeactivateApiKey, useReactivateApiKey, useRevokeApiKey } from "@/hooks/useData";
 import { formatDate, EmailStatusBadge, ApiKeyStatusBadge, HttpMethodBadge, StatusCodeBadge } from "@/components/badges";
+import apiClient from "@/services/apiClient";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("Dashboard");
@@ -13,6 +14,38 @@ export default function Home() {
   // Busca dados da API
   const { data: stats, isLoading: loadingStats, error: errorStats } = useGeneralStats();
   const { data: apiKeys, isLoading: loadingKeys, error: errorKeys } = useApiKeys();
+  
+  // Mutations para gerenciar API Keys
+  const deactivateMutation = useDeactivateApiKey();
+  const reactivateMutation = useReactivateApiKey();
+  const revokeApiMutation = useRevokeApiKey();
+
+  // Atualiza o status da chave API
+  const inativarChave = async (keyNome: string) => {
+    try {
+      await deactivateMutation.mutateAsync(keyNome);
+    } catch (error) {
+      console.error('Erro ao desativar chave API:', error);
+    }
+  };
+
+  const reativarChave = async (keyNome: string) => {
+    try {
+      await reactivateMutation.mutateAsync(keyNome);
+    } catch (error) {
+      console.error('Erro ao reativar chave API:', error);
+    }
+  };
+
+  // Desativar Chave API
+  const deletarChave = async (keyNome: string) => {
+    try {
+      await revokeApiMutation.mutateAsync(keyNome);
+    } catch (error) {
+      console.error('Erro ao deletar chave API:', error)
+    }
+  }
+  
 
   // Debug
   console.log('Stats:', stats);
@@ -125,8 +158,8 @@ export default function Home() {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-row gap-2">
-                            <img className='cursor-pointer' src={key.ativa ? "/deactivate.png" : "/activate.png"} />
-                            <img className='cursor-pointer' src="/erase.png" />
+                            <img className='cursor-pointer' src={key.ativa ? "/deactivate.png" : "/activate.png"} onClick={() => key.ativa ? inativarChave(key.nome) : reativarChave(key.nome)} />
+                            <img className='cursor-pointer' src="/erase.png" onClick={() => deletarChave(key.nome)}/>
                           </div>
                         </TableCell>
                       </TableRow>
