@@ -1,14 +1,8 @@
-"use client";
+import AuthPanel from "@/components/auth-panel"
+import Input from "@/components/input"
+import Button from "@/components/button"
 
-import AuthPanel from "@/components/auth-panel";
-import Button from "@/components/button";
-import Input from "@/components/input";
-import Link from "next/link";
-
-export default function LoginPage() {
-    async function HandleLogin(){
-        location.href = '/'
-    }
+export default function CadastroPage() {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 gap-6 md:gap-8">
             <div className="w-full max-w-md">
@@ -20,10 +14,11 @@ export default function LoginPage() {
             </div>
 
             <div className="w-full max-w-md flex items-center justify-center px-4">
-                <AuthPanel titulo="Login de Administrador" rodape="Precisa de uma API Key?" rodapeLink="/cadastro" rodapeLinkTexto="Registre seu serviço" altura="h-auto min-h-[408px]" largura="w-full">
+                <AuthPanel titulo="Cadastre seu projeto" rodape="É um administrador?" rodapeLink="/login" rodapeLinkTexto="Painel Administrativo" altura="h-auto min-h-[408px]" largura="w-full">
+                    <Input id="nome" label="Nome" type="text" placeholder="Meu Projeto" altura="h-[50px]" largura="w-full" />
                     <Input id="email" label="Email" type="email" placeholder="admin@example.com" altura="h-[50px]" largura="w-full" />
                     <Input id="senha" label="Senha" type="password" placeholder="********" altura="h-[50px]" largura="w-full" />
-                    <Button texto="Entrar" cor="bg-[#4F46E5]" hover="hover:bg-[#231c9b]" largura="w-full" altura="h-[48px]" margem="mb-5 mt-10" onClick={HandleLogin}/>
+                    <Button texto="Gerar API Key" cor="bg-[#4F46E5]" hover="hover:bg-[#231c9b]" largura="w-full" altura="h-[48px]" margem="mb-5 mt-10" />
                 </AuthPanel>
             </div>
         </div>
