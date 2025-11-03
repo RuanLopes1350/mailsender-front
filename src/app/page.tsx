@@ -81,7 +81,7 @@ export default function Home() {
 
               <div className="bg-white rounded-2xl border p-4 md:p-10 mx-4 md:mx-17 overflow-x-auto">
                 <div className="flex flex-row items-center gap-2">
-                  <img className="h-[24px] w-[24px]" src="/recents-purple.png" />
+                  <img className="h-[24px] w-[24px]" src="/recents-purple.png" draggable='false' />
                   <h1 className="font-bold text-2xl">Emails Recentes</h1>
                 </div>
                 <Table>
@@ -125,7 +125,7 @@ export default function Home() {
         <div>
           <div className="bg-white rounded-2xl border mt-10 p-4 md:p-10 mx-4 md:mx-17 overflow-x-auto">
             <div className="flex flex-row items-center gap-2">
-              <img className="h-[24px] w-[24px]" src="/recents-purple.png" />
+              <img className="h-[24px] w-[24px]" src="/recents-purple.png" draggable='false' />
               <h1 className="font-bold text-xl md:text-2xl">Gerenciar API Keys</h1>
             </div>
             {loadingKeys ? (
@@ -157,8 +157,8 @@ export default function Home() {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-row gap-2">
-                            <img className='cursor-pointer' src={key.ativa ? "/deactivate.png" : "/activate.png"} onClick={() => key.ativa ? inativarChave(key.nome) : reativarChave(key.nome)} />
-                            <img className='cursor-pointer' src="/erase.png" onClick={() => deletarChave(key.nome)} />
+                            <img className='cursor-pointer' src={key.ativa ? "/deactivate.png" : "/activate.png"} onClick={() => key.ativa ? inativarChave(key.nome) : reativarChave(key.nome)} draggable='false' />
+                            <img className='cursor-pointer' src="/erase.png" onClick={() => deletarChave(key.nome)} draggable='false' />
                           </div>
                         </TableCell>
                       </TableRow>
@@ -182,7 +182,7 @@ export default function Home() {
         <div>
           <div className="bg-white rounded-2xl border mt-10 p-4 md:p-10 mx-4 md:mx-17 overflow-x-auto">
             <div className="flex flex-row items-center gap-2">
-              <img className="h-[24px] w-[24px]" src="/recents-purple.png" />
+              <img className="h-[24px] w-[24px]" src="/recents-purple.png" draggable='false' />
               <h1 className="font-bold text-xl md:text-2xl">Logs Recentes</h1>
             </div>
             {loadingStats ? (

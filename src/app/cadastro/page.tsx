@@ -48,7 +48,7 @@ export default function CadastroPage() {
         <div className="h-[calc(100vh-200px)] flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 gap-6">
             <div className="w-full max-w-md">
                 <div className="flex flex-col items-center gap-2">
-                    <img src="/logo-purple.png" className="w-20 h-20 sm:w-24 sm:h-24 md:w-auto md:h-auto object-contain" alt="Logo Mail Sender" />
+                    <img src="/logo-purple.png" className="w-20 h-20 sm:w-24 sm:h-24 md:w-auto md:h-auto object-contain" alt="Logo Mail Sender" draggable='false' />
                     <h1 className="text-xl sm:text-2xl font-bold text-[#111827]">Mail Sender</h1>
                     <p className="text-[#4B5563] text-[12px] sm:text-[14px] pt-2">Painel Administrativo</p>
                 </div>
