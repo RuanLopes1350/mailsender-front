@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Tab from "@/components/tab";
 import CardInfo from "@/components/card-info";
+import Link from "next/link";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useGeneralStats, useApiKeys, useDeactivateApiKey, useReactivateApiKey, useRevokeApiKey } from "@/hooks/useData";
 import { formatDate, EmailStatusBadge, ApiKeyStatusBadge, HttpMethodBadge, StatusCodeBadge } from "@/components/badges";
-import apiClient from "@/services/apiClient";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("Dashboard");
@@ -45,7 +45,6 @@ export default function Home() {
       console.error('Erro ao deletar chave API:', error)
     }
   }
-
 
   // Debug
   console.log('Stats:', stats);

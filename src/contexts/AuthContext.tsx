@@ -5,6 +5,7 @@ import { authService } from '@/services/authService';
 import { setJwtToken, removeJwtToken } from '@/services/apiClient';
 import type { User } from '@/types/api';
 
+
 interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;

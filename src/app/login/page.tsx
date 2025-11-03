@@ -10,7 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function LoginPage() {
     const router = useRouter();
     const { login } = useAuth();
-    
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -33,13 +33,13 @@ export default function LoginPage() {
 
         try {
             setIsLoading(true);
-            
+
             // Faz o login usando o contexto
             await login(email, password);
-            
+
             // Se chegou aqui, o login foi bem-sucedido
             console.log("Login realizado com sucesso!");
-            
+
             // Redireciona para a página principal
             router.push("/");
         } catch (err: any) {
@@ -47,6 +47,13 @@ export default function LoginPage() {
             setError(err.message || "Erro ao fazer login. Verifique suas credenciais.");
         } finally {
             setIsLoading(false);
+        }
+    }
+
+    // Função para lidar com Enter
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && !isLoading) {
+            handleLogin();
         }
     }
 
@@ -67,36 +74,38 @@ export default function LoginPage() {
                             <p className="text-sm">{error}</p>
                         </div>
                     )}
-                    
-                    <Input 
-                        id="Login" 
-                        label="Login" 
-                        type="text" 
-                        placeholder="admin@example.com" 
-                        altura="h-[50px]" 
+
+                    <Input
+                        id="Login"
+                        label="Login"
+                        type="text"
+                        placeholder="admin@example.com"
+                        altura="h-[50px]"
                         largura="w-full"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        onKeyPress={handleKeyPress}
                     />
-                    
-                    <Input 
-                        id="senha" 
-                        label="Senha" 
-                        type="password" 
-                        placeholder="********" 
-                        altura="h-[50px]" 
+
+                    <Input
+                        id="senha"
+                        label="Senha"
+                        type="password"
+                        placeholder="********"
+                        altura="h-[50px]"
                         largura="w-full"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        onKeyPress={handleKeyPress}
                     />
-                    
-                    <Button 
-                        texto={isLoading ? "Entrando..." : "Entrar"} 
-                        cor="bg-[#4F46E5]" 
-                        hover="hover:bg-[#231c9b]" 
-                        largura="w-full" 
-                        altura="h-[48px]" 
-                        margem="mb-5 mt-10" 
+
+                    <Button
+                        texto={isLoading ? "Entrando..." : "Entrar"}
+                        cor="bg-[#4F46E5]"
+                        hover="hover:bg-[#231c9b]"
+                        largura="w-full"
+                        altura="h-[48px]"
+                        margem="mb-5 mt-10"
                         onClick={handleLogin}
                     />
                 </AuthPanel>
