@@ -51,7 +51,7 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 gap-6 md:gap-8">
+        <div className="h-[calc(100vh-200px)] flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 gap-6 md:gap-8">
             <div className="w-full max-w-md">
                 <div className="flex flex-col items-center gap-2">
                     <img src="/logo-purple.png" className="w-20 h-20 sm:w-24 sm:h-24 md:w-auto md:h-auto object-contain" alt="Logo Mail Sender" />

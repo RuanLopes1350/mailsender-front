@@ -14,7 +14,7 @@ export default function Home() {
   // Busca dados da API
   const { data: stats, isLoading: loadingStats, error: errorStats } = useGeneralStats();
   const { data: apiKeys, isLoading: loadingKeys, error: errorKeys } = useApiKeys();
-  
+
   // Mutations para gerenciar API Keys
   const deactivateMutation = useDeactivateApiKey();
   const reactivateMutation = useReactivateApiKey();
@@ -45,7 +45,7 @@ export default function Home() {
       console.error('Erro ao deletar chave API:', error)
     }
   }
-  
+
 
   // Debug
   console.log('Stats:', stats);
@@ -57,7 +57,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="flex flex-row gap-24 px-16">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-24 px-4 md:px-16">
         <Tab icon='/dashboard' text='Dashboard' selected={activeTab === 'Dashboard'} onSelect={() => setActiveTab('Dashboard')} />
         <Tab icon='/keys' text='API Keys' selected={activeTab === 'API Keys'} onSelect={() => setActiveTab('API Keys')} />
         <Tab icon='/email' text='Testar Email' selected={activeTab === 'Testar Email'} onSelect={() => setActiveTab('Testar Email')} />
@@ -73,14 +73,14 @@ export default function Home() {
             <div className="text-center p-10 text-red-500">Erro ao carregar dados: {errorStats.message}</div>
           ) : (
             <>
-              <div className="flex flex-row gap-28 pl-18 pt-10 pb-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 px-4 md:px-8 lg:px-18 pt-10 pb-10">
                 <CardInfo icon='/emails-dash.png' number={stats?.emails.total || 0} description="Total de emails" />
                 <CardInfo icon="/success-dash.png" number={stats?.emails.enviados || 0} description="Emails Enviados" />
                 <CardInfo icon="/fail-dash.png" number={stats?.emails.falhas || 0} description="Emails Falhados" />
                 <CardInfo icon="/logs-dash.png" number={stats?.requests.total || 0} description="Total de Requisições" />
               </div>
 
-              <div className="bg-white rounded-2xl border p-10 mx-17">
+              <div className="bg-white rounded-2xl border p-4 md:p-10 mx-4 md:mx-17 overflow-x-auto">
                 <div className="flex flex-row items-center gap-2">
                   <img className="h-[24px] w-[24px]" src="/recents-purple.png" />
                   <h1 className="font-bold text-2xl">Emails Recentes</h1>
@@ -124,10 +124,10 @@ export default function Home() {
       {/* API Keys */}
       {activeTab === 'API Keys' && (
         <div>
-          <div className="bg-white rounded-2xl border mt-10 p-10 mx-17">
+          <div className="bg-white rounded-2xl border mt-10 p-4 md:p-10 mx-4 md:mx-17 overflow-x-auto">
             <div className="flex flex-row items-center gap-2">
               <img className="h-[24px] w-[24px]" src="/recents-purple.png" />
-              <h1 className="font-bold text-2xl">Gerenciar API Keys</h1>
+              <h1 className="font-bold text-xl md:text-2xl">Gerenciar API Keys</h1>
             </div>
             {loadingKeys ? (
               <div className="text-center p-10">Carregando...</div>
@@ -159,7 +159,7 @@ export default function Home() {
                         <TableCell>
                           <div className="flex flex-row gap-2">
                             <img className='cursor-pointer' src={key.ativa ? "/deactivate.png" : "/activate.png"} onClick={() => key.ativa ? inativarChave(key.nome) : reativarChave(key.nome)} />
-                            <img className='cursor-pointer' src="/erase.png" onClick={() => deletarChave(key.nome)}/>
+                            <img className='cursor-pointer' src="/erase.png" onClick={() => deletarChave(key.nome)} />
                           </div>
                         </TableCell>
                       </TableRow>
@@ -181,10 +181,10 @@ export default function Home() {
       {/* Logs Recentes */}
       {activeTab === 'Logs Recentes' && (
         <div>
-          <div className="bg-white rounded-2xl border mt-10 p-10 mx-17">
+          <div className="bg-white rounded-2xl border mt-10 p-4 md:p-10 mx-4 md:mx-17 overflow-x-auto">
             <div className="flex flex-row items-center gap-2">
               <img className="h-[24px] w-[24px]" src="/recents-purple.png" />
-              <h1 className="font-bold text-2xl">Logs Recentes</h1>
+              <h1 className="font-bold text-xl md:text-2xl">Logs Recentes</h1>
             </div>
             {loadingStats ? (
               <div className="text-center p-10">Carregando...</div>

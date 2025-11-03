@@ -21,7 +21,7 @@ export default function CadastroPage() {
     const gerarApiKey = async (name: string, email: string, pass: string) => {
         setError(null);
         setIsLoading(true);
-        
+
         try {
             let response = await generateApiKey.mutateAsync({ name, email, pass });
             setResposta(response.apiKey);
@@ -45,7 +45,7 @@ export default function CadastroPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 gap-6 md:gap-8">
+        <div className="h-[calc(100vh-200px)] flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 gap-6">
             <div className="w-full max-w-md">
                 <div className="flex flex-col items-center gap-2">
                     <img src="/logo-purple.png" className="w-20 h-20 sm:w-24 sm:h-24 md:w-auto md:h-auto object-contain" alt="Logo Mail Sender" />
@@ -63,12 +63,12 @@ export default function CadastroPage() {
                             <div className="h-[44px] w-full bg-white rounded-[10px] flex items-center mt-4 mb-4 p-4 overflow-hidden">
                                 {resposta.substring(0, 29) + '...'}
                             </div>
-                            <Button 
-                                texto={copiado ? "✓ Copiado!" : "Copiar API Key"} 
-                                cor={copiado ? "bg-[#059669]" : "bg-[#16A34A]"} 
-                                hover="hover:bg-[#18592F]" 
-                                altura="h-[48px]" 
-                                largura="w-full" 
+                            <Button
+                                texto={copiado ? "✓ Copiado!" : "Copiar API Key"}
+                                cor={copiado ? "bg-[#059669]" : "bg-[#16A34A]"}
+                                hover="hover:bg-[#18592F]"
+                                altura="h-[48px]"
+                                largura="w-full"
                                 margem="mb-5 mt-6"
                                 onClick={copiarParaClipboard}
                             />
@@ -87,14 +87,14 @@ export default function CadastroPage() {
                         <Input id="nome" label="Nome" type="text" placeholder="Meu Projeto" altura="h-[50px]" largura="w-full" onChange={(e) => setName(e.target.value)} />
                         <Input id="email" label="Email" type="email" placeholder="admin@example.com" altura="h-[50px]" largura="w-full" onChange={(e) => setEmail(e.target.value)} />
                         <Input id="senha" label="Senha" type="text" placeholder="ABCD 1234 EFGH 5678" altura="h-[50px]" largura="w-full" onChange={(e) => setPass(e.target.value)} />
-                        <Button 
-                            texto={isLoading ? "Gerando..." : "Gerar API Key"} 
-                            cor="bg-[#4F46E5]" 
-                            hover="hover:bg-[#231c9b]" 
-                            largura="w-full" 
-                            altura="h-[48px]" 
-                            margem="mb-5 mt-10" 
-                            onClick={() => gerarApiKey(name, email, pass)} 
+                        <Button
+                            texto={isLoading ? "Gerando..." : "Gerar API Key"}
+                            cor="bg-[#4F46E5]"
+                            hover="hover:bg-[#231c9b]"
+                            largura="w-full"
+                            altura="h-[48px]"
+                            margem="mb-5 mt-10"
+                            onClick={() => gerarApiKey(name, email, pass)}
                         />
                     </AuthPanel>
                 </div>
