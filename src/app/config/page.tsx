@@ -5,11 +5,15 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { useState } from 'react'
 import { UserPlus, Users, UserX, UserPen } from 'lucide-react'
 import Button from '@/components/button'
+import Modal from '@/components/modal'
+import Input from '@/components/input'
 
 export default function ConfigPage() {
     const [aprovarApi, setAprovarApi] = useState<boolean>(true)
+    const [activeModal, setActiveModal] = useState<string | null>(null)
+
     const handleAprovarApiClick = async (estado: boolean) => {
-        if(estado === true) {
+        if (estado === true) {
             setAprovarApi(false)
             return
         } else {
@@ -62,8 +66,26 @@ export default function ConfigPage() {
                                 </span>
                             </TableCell>
                             <TableCell className='flex flex-row flex-1 items-center justify-end gap-2'>
-                                <Button icone={<UserPlus />} cor='bg-green-600' altura='h-10' largura='w-35' texto='Novo Admin' hover='' margem='' />
-                                <Button icone={<Users />} cor='bg-blue-600' altura='h-10' largura='w-35' texto='Listar Admins' hover='' margem='' />
+                                <Button
+                                    icone={<UserPlus />}
+                                    cor='bg-green-600'
+                                    altura='h-10'
+                                    largura='w-35'
+                                    texto='Novo Admin'
+                                    hover=''
+                                    margem=''
+                                    onClick={() => setActiveModal('novo')}
+                                />
+                                <Button
+                                    icone={<Users />}
+                                    cor='bg-blue-600'
+                                    altura='h-10'
+                                    largura='w-35'
+                                    texto='Listar Admins'
+                                    hover=''
+                                    margem=''
+                                    onClick={() => setActiveModal('listar')}
+                                />
                                 {/* <Button icone={<UserX />} cor='bg-red-600' altura='h-10' largura='w-35' texto='Excluir Admin' hover='' margem='' />
                                 <Button icone={<UserPen />} cor='bg-orange-500' altura='h-10' largura='w-35' texto='Editar Admin' hover='' margem='' /> */}
                             </TableCell>
@@ -81,12 +103,30 @@ export default function ConfigPage() {
                                 </span>
                             </TableCell>
                             <TableCell className='flex flex-row flex-1 items-center justify-end'>
-                                
+
                             </TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
             </div>
+
+            {/* Modal de Listar Admins */}
+            <Modal
+                titulo="Lista de Administradores"
+                isOpen={activeModal === 'listar'}
+                onClose={() => setActiveModal(null)}
+            >
+                <div></div>
+            </Modal>
+
+            {/* Modal de Novo Admin */}
+            <Modal
+                titulo="Adicionar Novo Administrador"
+                isOpen={activeModal === 'novo'}
+                onClose={() => setActiveModal(null)}
+            >
+                <div></div>
+            </Modal>
         </>
     )
 }
