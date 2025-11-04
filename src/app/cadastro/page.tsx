@@ -5,16 +5,23 @@ import Input from "@/components/input"
 import Button from "@/components/button"
 import { useGenerateApiKey } from "@/hooks/useData"
 import { useState } from "react"
+import { apiKeySchema } from "../validations/apiKey"
+import { ZodError } from "zod"
 
 export default function CadastroPage() {
     const generateApiKey = useGenerateApiKey();
+
+    interface IError {
+        mensagem: string;
+        code?: number;
+    }
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
 
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<IError[] | null>(null);
     const [resposta, setResposta] = useState<string | null>(null);
     const [copiado, setCopiado] = useState(false);
 
@@ -22,11 +29,28 @@ export default function CadastroPage() {
         setError(null);
         setIsLoading(true);
 
+        const apiKey = {
+            nome: name,
+            email: email,
+            senha: pass
+        }
+
         try {
+            apiKeySchema.parse(apiKey)
             let response = await generateApiKey.mutateAsync({ name, email, pass });
             setResposta(response.apiKey);
         } catch (error: any) {
-            setError(error.message || 'Erro ao gerar API Key');
+            if (error instanceof ZodError) {
+                const mensagensErro: IError[] = error.issues.map(err => {
+                    console.log(err.message)
+                    return {
+                        mensagem: err.message
+                    };
+                });
+                setError(mensagensErro);
+            } else {
+                setError([{ mensagem: error.message || 'Erro ao gerar API Key' }]);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -81,7 +105,7 @@ export default function CadastroPage() {
                     <AuthPanel titulo="Cadastre seu projeto" rodape="É um administrador?" rodapeLink="/login" rodapeLinkTexto="Painel Administrativo" altura="h-auto min-h-[408px]" largura="w-full">
                         {error && (
                             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-[10px] mb-4">
-                                <p className="text-sm">{error}</p>
+                                <p className="text-sm">{error[0].mensagem}</p>
                             </div>
                         )}
                         <Input id="nome" label="Nome" type="text" placeholder="Meu Projeto" altura="h-[50px]" largura="w-full" onChange={(e) => setName(e.target.value)} />

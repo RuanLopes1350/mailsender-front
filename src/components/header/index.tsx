@@ -8,18 +8,18 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function Header() {
     const pathname = usePathname();
     const ignore = ['/login', '/cadastro'];
-
-    // Se a rota atual está na lista de ignorados, não renderiza nada
-    if (ignore.includes(pathname)) {
-        return null;
-    }
-
     const { logout } = useAuth()
     const handleLogOut = async () => {
         console.log('Saindo...')
         window.location.href = '/login'
         return logout()
     }
+
+    // Se a rota atual está na lista de ignorados, não renderiza nada
+    if (ignore.includes(pathname)) {
+        return null;
+    }
+
 
     return (
         <div className="min-h-[100px] md:min-h-[136px] bg-linear-to-r from-[#4F46E5] to-[#9333EA] flex flex-col items-center justify-center mt-4 md:mt-6 mb-4 md:mb-6 px-4 max-w-[1850px] mx-4 md:mx-auto rounded-2xl shadow-2xl py-6">

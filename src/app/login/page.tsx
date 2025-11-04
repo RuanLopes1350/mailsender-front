@@ -6,33 +6,45 @@ import AuthPanel from "@/components/auth-panel";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useAuth } from "@/contexts/AuthContext";
+import { loginSchema } from "../validations/login";
+import { ZodError } from "zod"
 
 export default function LoginPage() {
+
+    interface IError {
+        mensagem: string;
+        code?: number;
+    }
+
     const router = useRouter();
     const { login } = useAuth();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const [error, setError] = useState<IError[] | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
     async function handleLogin() {
         // Limpa erros anteriores
-        setError("");
+        setError(null);
 
         // Validações básicas
-        if (!email || !password) {
-            setError("Por favor, preencha todos os campos");
-            return;
-        }
+        // if (!email || !password) {
+        //     setError("Por favor, preencha todos os campos");
+        //     return;
+        // }
 
         // if (!email.includes("@")) {
         //     setError("Por favor, insira um email válido");
         //     return;
         // }
 
+        const loginData = { login: email, senha: password };
+
         try {
             setIsLoading(true);
+
+            loginSchema.parse(loginData);
 
             // Faz o login usando o contexto
             await login(email, password);
@@ -42,9 +54,18 @@ export default function LoginPage() {
 
             // Redireciona para a página principal
             router.push("/");
-        } catch (err: any) {
-            console.error("Erro ao fazer login:", err);
-            setError(err.message || "Erro ao fazer login. Verifique suas credenciais.");
+        } catch (error: any) {
+            if (error instanceof ZodError) {
+                const mensagensErro: IError[] = error.issues.map(err => {
+                    console.log(err.message)
+                    return {
+                        mensagem: err.message
+                    };
+                });
+                setError(mensagensErro);
+            } else {
+                setError([{ mensagem: error.message || 'Erro ao gerar API Key' }]);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -71,7 +92,7 @@ export default function LoginPage() {
                 <AuthPanel titulo="Login de Administrador" rodape="Precisa de uma API Key?" rodapeLink="/cadastro" rodapeLinkTexto="Registre seu serviço" altura="h-auto min-h-[408px]" largura="w-full">
                     {error && (
                         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-[10px] mt-4" role="alert">
-                            <p className="text-sm">{error}</p>
+                            <p className="text-sm">{error[0].mensagem}</p>
                         </div>
                     )}
 
