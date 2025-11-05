@@ -21,7 +21,7 @@ export default function ConfigPage() {
         second: '2-digit'
     });
     let agoraFormatada = `${dataFormatada} ${horaFormatada}`;
-    const [aprovarApi, setAprovarApi] = useState<boolean>(true)
+    const [aprovarApi, setAprovarApi] = useState<boolean>(false)
     const [activeModal, setActiveModal] = useState<string | null>(null)
 
     const handleAprovarApiClick = async (estado: boolean) => {
@@ -172,9 +172,11 @@ export default function ConfigPage() {
                 isOpen={activeModal === 'novo'}
                 onClose={() => setActiveModal(null)}
             >
+                <div className=''>
                     <Input label='Login' altura='h-10' largura='' id='login' type='text' placeholder='Login' />
                     <Input label='Senha' altura='h-10' largura='' id='senha' type='password' placeholder='Senha' />
-                    <Button margem='ml-93 mt-8' texto='Cadastrar' cor='bg-green-600' hover='bg-green-900' altura='h-10' largura='w-35' icone={<UserPlus />}/>
+                    <Button margem='ml-93 mt-8' texto='Cadastrar' cor='bg-green-600' hover='bg-green-900' altura='h-10' largura='w-35' icone={<UserPlus />} />
+                </div>
             </Modal>
         </>
     )

@@ -7,8 +7,12 @@ import Link from "next/link";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useGeneralStats, useApiKeys, useDeactivateApiKey, useReactivateApiKey, useRevokeApiKey } from "@/hooks/useData";
 import { formatDate, EmailStatusBadge, ApiKeyStatusBadge, HttpMethodBadge, StatusCodeBadge } from "@/components/badges";
+import Button from "@/components/button";
+import Modal from "@/components/modal";
+import Input from "@/components/input";
 
 export default function Home() {
+  const [activeModal, setActiveModal] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("Dashboard");
 
   // Busca dados da API
@@ -56,6 +60,17 @@ export default function Home() {
 
   return (
     <>
+      <Modal
+        titulo="Adicionar Nova Chave de API"
+        isOpen={activeModal === 'novaApi'}
+        onClose={() => setActiveModal(null)}
+      >
+        <div>
+          
+        </div>
+      </Modal>
+
+
       <div className="flex flex-col md:flex-row gap-4 md:gap-24 px-4 md:px-16">
         <Tab icon='/dashboard' text='Dashboard' selected={activeTab === 'Dashboard'} onSelect={() => setActiveTab('Dashboard')} />
         <Tab icon='/keys' text='API Keys' selected={activeTab === 'API Keys'} onSelect={() => setActiveTab('API Keys')} />
@@ -128,6 +143,7 @@ export default function Home() {
               <img className="h-[24px] w-[24px]" src="/recents-purple.png" draggable='false' />
               <h1 className="font-bold text-xl md:text-2xl">Gerenciar API Keys</h1>
             </div>
+            <Button texto="Cadastrar Nova" cor="bg-green-600" altura="h-10" largura="w-36" margem="" onClick={() => setActiveModal('novaApi')} />
             {loadingKeys ? (
               <div className="text-center p-10">Carregando...</div>
             ) : errorKeys ? (
