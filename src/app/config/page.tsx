@@ -9,6 +9,18 @@ import Modal from '@/components/modal'
 import Input from '@/components/input'
 
 export default function ConfigPage() {
+    let agora = new Date();
+    let dataFormatada = agora.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+    let horaFormatada = agora.toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    let agoraFormatada = `${dataFormatada} ${horaFormatada}`;
     const [aprovarApi, setAprovarApi] = useState<boolean>(true)
     const [activeModal, setActiveModal] = useState<string | null>(null)
 
@@ -116,7 +128,42 @@ export default function ConfigPage() {
                 isOpen={activeModal === 'listar'}
                 onClose={() => setActiveModal(null)}
             >
-                <div></div>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Nome</TableHead>
+                            <TableHead>Login</TableHead>
+                            <TableHead>Criado Em</TableHead>
+                            <TableHead>Último Acesso</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell>Ruan Lopes</TableCell>
+                            <TableCell>Shark1350</TableCell>
+                            <TableCell>21/11/2000</TableCell>
+                            <TableCell>{agoraFormatada}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Ruan Lopes</TableCell>
+                            <TableCell>Shark1350</TableCell>
+                            <TableCell>21/11/2000</TableCell>
+                            <TableCell>{agoraFormatada}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Ruan Lopes</TableCell>
+                            <TableCell>Shark1350</TableCell>
+                            <TableCell>21/11/2000</TableCell>
+                            <TableCell>{agoraFormatada}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Ruan Lopes</TableCell>
+                            <TableCell>Shark1350</TableCell>
+                            <TableCell>21/11/2000</TableCell>
+                            <TableCell>{agoraFormatada}</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
             </Modal>
 
             {/* Modal de Novo Admin */}
@@ -125,7 +172,9 @@ export default function ConfigPage() {
                 isOpen={activeModal === 'novo'}
                 onClose={() => setActiveModal(null)}
             >
-                <div></div>
+                    <Input label='Login' altura='h-10' largura='' id='login' type='text' placeholder='Login' />
+                    <Input label='Senha' altura='h-10' largura='' id='senha' type='password' placeholder='Senha' />
+                    <Button margem='ml-93 mt-8' texto='Cadastrar' cor='bg-green-600' hover='bg-green-900' altura='h-10' largura='w-35' icone={<UserPlus />}/>
             </Modal>
         </>
     )
