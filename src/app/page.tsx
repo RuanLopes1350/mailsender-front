@@ -10,10 +10,15 @@ import { formatDate, EmailStatusBadge, ApiKeyStatusBadge, HttpMethodBadge, Statu
 import Button from "@/components/button";
 import Modal from "@/components/modal";
 import Input from "@/components/input";
+import { IZodError } from "@/types/interfaces";
+import { ZodError } from "zod";
+import { apiKeySchema } from "./validations/apiKey";
+import { useGenerateApiKey } from "@/hooks/useData"
+
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState("Dashboard");
+  const [activeTab, setActiveTab] = useState("API Keys");
 
   // Busca dados da API
   const { data: stats, isLoading: loadingStats, error: errorStats } = useGeneralStats();
@@ -50,6 +55,61 @@ export default function Home() {
     }
   }
 
+  // Gerar nova API Key
+  const [nameAPI, setNameAPI] = useState('');
+  const [emailAPI, setEmailAPI] = useState('');
+  const [passAPI, setPassAPI] = useState('');
+
+  const [isLoadingAPI, setIsLoadingAPI] = useState(false);
+  const [errorAPI, setErrorAPI] = useState<IZodError[] | null>(null);
+  const [respostaAPI, setRespostaAPI] = useState<string | null>(null);
+  const [copiadoAPI, setCopiadoAPI] = useState(false);
+  const generateApiKey = useGenerateApiKey();
+
+  const gerarApiKey = async (name: string, email: string, pass: string) => {
+    setErrorAPI(null);
+    setIsLoadingAPI(true);
+
+    const apiKey = {
+      nome: name,
+      email: email,
+      senha: pass
+    }
+
+    try {
+      apiKeySchema.parse(apiKey)
+      let response = await generateApiKey.mutateAsync({ name, email, pass });
+      setRespostaAPI(response.apiKey);
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        const mensagensErro: IZodError[] = error.issues.map(err => {
+          console.log(err.message)
+          return {
+            mensagem: err.message
+          };
+        });
+        setErrorAPI(mensagensErro);
+      } else {
+        setErrorAPI([{ mensagem: error.message || 'Erro ao gerar API Key' }]);
+      }
+    } finally {
+      setIsLoadingAPI(false);
+    }
+  }
+
+  const copiarParaClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(respostaAPI || '');
+      setCopiadoAPI(true);
+      // Reseta após 2 segundos
+      setTimeout(() => setCopiadoAPI(false), 2000);
+    } catch (error) {
+      console.error('Erro ao copiar:', error);
+      alert('Erro ao copiar. Tente selecionar e copiar manualmente.');
+    }
+  }
+
+
   // Debug
   console.log('Stats:', stats);
   console.log('Loading Stats:', loadingStats);
@@ -65,9 +125,18 @@ export default function Home() {
         isOpen={activeModal === 'novaApi'}
         onClose={() => setActiveModal(null)}
       >
-        <div>
-          
-        </div>
+        <Input id="nome" placeholder="Nome do Serviço" label="Nome" type="text" altura="" largura="" />
+        <Input id="email" placeholder="meu@servico.com" label="Email" type="email" altura="" largura="" />
+        <Input id="nome" placeholder="Senha de App/Token" label="Senha/Token" type="password" altura="" largura="" />
+        <Button
+          texto={isLoadingAPI ? "Gerando..." : "Gerar API Key"}
+          cor="bg-[#4F46E5]"
+          hover="hover:bg-[#231c9b]"
+          largura="w-full"
+          altura="h-[42px] sm:h-[48px]"
+          margem="mb-3 sm:mb-5 mt-6 sm:mt-8 md:mt-10"
+          onClick={() => gerarApiKey(nameAPI, emailAPI, passAPI)}
+        />
       </Modal>
 
 
