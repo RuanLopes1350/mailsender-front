@@ -4,15 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService } from '@/services/authService';
 import { setJwtToken, removeJwtToken } from '@/services/apiClient';
 import type { User } from '@/types/api';
-
-
-interface AuthContextType {
-    user: User | null;
-    isAuthenticated: boolean;
-    isLoading: boolean;
-    login: (email: string, password: string) => Promise<void>;
-    logout: () => void;
-}
+import { AuthContextType } from '@/types/interfaces';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
