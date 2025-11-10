@@ -5,7 +5,7 @@ import Input from "@/components/input"
 import Button from "@/components/button"
 import { useGenerateApiKey } from "@/hooks/useData"
 import { useState } from "react"
-import { apiKeySchema } from "../validations/apiKey"
+import { apiKeySchema } from "../../validations/apiKey"
 import { ZodError } from "zod"
 import { IZodError } from "@/types/interfaces"
 

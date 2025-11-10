@@ -12,7 +12,7 @@ import Modal from "@/components/modal";
 import Input from "@/components/input";
 import { IZodError } from "@/types/interfaces";
 import { ZodError } from "zod";
-import { apiKeySchema } from "./validations/apiKey";
+import { apiKeySchema } from "../validations/apiKey";
 import { useGenerateApiKey } from "@/hooks/useData"
 
 

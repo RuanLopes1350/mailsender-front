@@ -115,7 +115,17 @@ export default function ConfigPage() {
                                 </span>
                             </TableCell>
                             <TableCell className='flex flex-row flex-1 items-center justify-end'>
-
+                                <div className="flex flex-col gap-3.5">
+                                    <label className="text-white font-medium text-[15.3px]" htmlFor="downloads">Retentativas</label>
+                                    <div className="relative p-4 rounded-[10px] border border-[#3B82F6]/20 shadow-lg">
+                                        <div className="flex justify-between text-white text-base font-semibold pl-[5px] pr-[5px] absolute inset-x-4 top-2 pointer-events-none">
+                                            {[1, 2, 3, 4, 5].map(num => (
+                                                <span key={num} className="text-[#93C5FD] drop-shadow-sm">{num}</span>
+                                            ))}
+                                        </div>
+                                        <input id="downloads" type="range" step='1' min='1' max='5' className="w-full h-14 rounded-[10px] bg-[#0F172A] border-0 mt-6 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                    </div>
+                                </div>
                             </TableCell>
                         </TableRow>
                     </TableBody>

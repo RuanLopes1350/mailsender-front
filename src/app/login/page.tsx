@@ -6,7 +6,7 @@ import AuthPanel from "@/components/auth-panel";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import { useAuth } from "@/contexts/AuthContext";
-import { loginSchema } from "../validations/login";
+import { loginSchema } from "../../validations/login";
 import { ZodError } from "zod"
 import { IZodError } from "@/types/interfaces";
 
