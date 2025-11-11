@@ -18,7 +18,8 @@ import { useGenerateApiKey } from "@/hooks/useData"
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState("API Keys");
+  const [activeTab, setActiveTab] = useState("Testar Email");
+  const [footerLinks, setFooterLinks] = useState(false);
 
   // Busca dados da API
   const { data: stats, isLoading: loadingStats, error: errorStats } = useGeneralStats();
@@ -261,6 +262,58 @@ export default function Home() {
       )}
 
       {/* Emails */}
+      {activeTab === 'Testar Email' && (
+        <div>
+          <div className="bg-white rounded-2xl border mt-10 p-4 md:p-10 mx-4 md:mx-17 overflow-x-auto">
+            <div className="flex flex-row items-center gap-2">
+              <img className="h-[24px] w-[24px]" src="/email-purple.png" draggable='false' />
+              <h1 className="font-bold text-xl md:text-2xl">Testar Envio de Email</h1>
+            </div>
+            <div className="flex flex-col gap-6">
+              <div className="bg-[#F9FAFB] rounded-2xl p-6">
+                <h2 className="font-bold text-black text-[18px]">Configurações Básicas</h2>
+                <Input id="apiKey" type="text" label="API Key *" altura="" largura="" placeholder="Digite sua API Key" />
+                <Input id="destinatario" type="email" label="Para (email) *" altura="" largura="" placeholder="destinatario@example.com" />
+                <Input id="assunto" type="text" label="Assunto *" altura="" largura="" placeholder="Assunto do E-mail" />
+                <div className="flex flex-col mt-4 mb-4 gap-2">
+                  <select className="p-4 rounded-[10px] border">
+                    <option disabled selected>Selecione um template</option>
+                    <option value="bemvindo">Bem-Vindo</option>
+                    <option value="generico">Genérico</option>
+                  </select>
+                </div>
+              </div>
+              <div className="bg-[#EEF2FF] rounded-2xl p-6">
+
+              </div>
+              <div className="bg-[#FAF5FF] rounded-2xl p-6">
+                <h2 className="font-bold text-black text-[18px]">Customização Visual</h2>
+                <Input id="logoUrl" type="text" label="URL do Logo" altura="" largura="" placeholder="https://exemplo.com/logo.png" />
+                <div className="flex flex-row items-center justify-between">
+                  <Input id="corHeader" type="color" label="Cor Primária (Header)" altura="h-16" largura="w-[500px]" placeholder="" />
+                  <Input id="corBotao" type="color" label="Cor do Botão" altura="h-16" largura="w-[500px]" placeholder="" />
+                  <Input id="corDestaque" type="color" label="Cor de Destaque" altura="h-16" largura="w-[500px]" placeholder="" />
+                </div>
+              </div>
+              <div className="bg-[#F9FAFB] rounded-2xl p-6">
+                <h2 className="font-bold text-black text-[18px]">Rodapé</h2>
+                <span>Texto do Footer</span>
+                <div className="flex flex-row gap-3 items-center">
+                  <input type="checkbox" name="footerLinks" id="footerLinks" checked={footerLinks} onChange={(e) => setFooterLinks(e.target.checked)} />
+                  <label htmlFor="footerLinks">Exibir Links no Footer</label>
+                </div>
+                {footerLinks && (
+                  <div className="flex flex-row gap-6 items-center justify-between">
+                    <Input id="linkSite" type="text" label="Link do Site" altura="" largura="w-[500px]" placeholder="https://site.com" />
+                    <Input id="linkSuporte" type="text" label="Link do Suporte" altura="" largura="w-[500px]" placeholder="https://suporte.com" />
+                    <Input id="linkPrivacidade" type="text" label="Link Privacidade" altura="" largura="w-[500px]" placeholder="https://privacidade.com" />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Logs Recentes */}
       {activeTab === 'Logs Recentes' && (
