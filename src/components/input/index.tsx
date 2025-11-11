@@ -6,16 +6,17 @@ interface InputProps {
     largura: string;
     altura: string;
     value?: string;
+    className?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-export default function Input({ id, type, label, placeholder, altura, largura, value, onChange, onKeyPress }: InputProps) {
+export default function Input({ id, type, label, placeholder, altura, largura, value, className, onChange, onKeyPress }: InputProps) {
     return (
         <div className="flex flex-col mt-4 mb-4 gap-2">
             <label className="" htmlFor={id}>{label}</label>
             <input
-                className={`${altura} ${largura} p-4 rounded-[10px] border`}
+                className={`${altura} ${largura} p-4 rounded-[10px] border ${className}`}
                 id={id}
                 type={type}
                 placeholder={placeholder}
