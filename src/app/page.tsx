@@ -14,6 +14,7 @@ import { IZodError } from "@/types/interfaces";
 import { ZodError } from "zod";
 import { apiKeySchema } from "../validations/apiKey";
 import { useGenerateApiKey } from "@/hooks/useData"
+import { GenerateApiKeyResponse } from "@/types/api";
 
 
 export default function Home() {
@@ -66,7 +67,7 @@ export default function Home() {
 
   const [isLoadingAPI, setIsLoadingAPI] = useState(false);
   const [errorAPI, setErrorAPI] = useState<IZodError[] | null>(null);
-  const [respostaAPI, setRespostaAPI] = useState<string | null>(null);
+  const [respostaAPI, setRespostaAPI] = useState<GenerateApiKeyResponse | null>(null);
   const [copiadoAPI, setCopiadoAPI] = useState(false);
   const generateApiKey = useGenerateApiKey();
 
@@ -82,8 +83,8 @@ export default function Home() {
 
     try {
       apiKeySchema.parse(apiKey)
-      let response = await generateApiKey.mutateAsync({ name, email, pass });
-      setRespostaAPI(response.apiKey);
+      let responseAPI = await generateApiKey.mutateAsync({ name, email, pass });
+      setRespostaAPI(responseAPI);
     } catch (error: any) {
       if (error instanceof ZodError) {
         const mensagensErro: IZodError[] = error.issues.map(err => {
@@ -103,7 +104,7 @@ export default function Home() {
 
   const copiarParaClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(respostaAPI || '');
+      await navigator.clipboard.writeText(respostaAPI?.apiKey || '');
       setCopiadoAPI(true);
       // Reseta após 2 segundos
       setTimeout(() => setCopiadoAPI(false), 2000);
@@ -129,18 +130,49 @@ export default function Home() {
         isOpen={activeModal === 'novaApi'}
         onClose={() => setActiveModal(null)}
       >
-        <Input id="nome" placeholder="Nome do Serviço" label="Nome" type="text" altura="" largura="" />
-        <Input id="email" placeholder="meu@servico.com" label="Email" type="email" altura="" largura="" />
-        <Input id="nome" placeholder="Senha de App/Token" label="Senha/Token" type="password" altura="" largura="" />
-        <Button
-          texto={isLoadingAPI ? "Gerando..." : "Gerar API Key"}
-          cor="bg-[#4F46E5]"
-          hover="hover:bg-[#231c9b]"
-          largura="w-full"
-          altura="h-[42px] sm:h-[48px]"
-          margem="mb-3 sm:mb-5 mt-6 sm:mt-8 md:mt-10"
-          onClick={() => gerarApiKey(nameAPI, emailAPI, passAPI)}
-        />
+        {respostaAPI ? (
+          <>
+            <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-[10px] p-4 sm:p-6">
+              <h1 className="text-[#166534] font-bold text-sm sm:text-base">⚠ATENÇÃO:</h1>
+              <p className="text-[#15803D] text-[10px] sm:text-[11px]">Guarde esta chave em local seguro. Ela não será mostrada novamente!</p>
+              {respostaAPI.isActive === false && (
+                <>
+                  <span className="text-[#dc4109] text-[10px] sm:text-[11px]">Contate seu administrador para que ele aprove sua chave. Somente poderá ser usada após aprovada pelo Administrador!</span>
+                </>
+              )}
+              <div className="h-[40px] sm:h-[44px] w-full bg-white rounded-[10px] flex items-center mt-3 sm:mt-4 mb-3 sm:mb-4 p-3 sm:p-4 overflow-hidden text-xs sm:text-sm">
+                {respostaAPI.apiKey.substring(0, 29) + '...'}
+              </div>
+              <Button
+                texto={copiadoAPI ? "✓ Copiado!" : "Copiar API Key"}
+                cor={copiadoAPI ? "bg-[#059669]" : "bg-[#16A34A]"}
+                hover="hover:bg-[#18592F]"
+                altura="h-[42px] sm:h-[48px]"
+                largura="w-full"
+                margem="mb-3 sm:mb-5 mt-4 sm:mt-6"
+                onClick={copiarParaClipboard}
+              />
+            </div>
+            <Button texto="Voltar" cor="bg-[#4F46E5]" hover="hover:bg-[#231c9b]" largura="w-full" altura="h-[42px] sm:h-[48px]" margem="mb-3 sm:mb-5 mt-6 sm:mt-8 md:mt-10" onClick={() => setRespostaAPI(null)} />
+          </>
+        ) : (
+          <>
+            <div className="space-y-3 sm:space-y-4">
+              <Input id="nome" label="Nome" type="text" placeholder="Meu Projeto" altura="h-[42px] sm:h-[50px]" largura="w-full" onChange={(e) => setNameAPI(e.target.value)} />
+              <Input id="email" label="Email" type="email" placeholder="admin@example.com" altura="h-[42px] sm:h-[50px]" largura="w-full" onChange={(e) => setEmailAPI(e.target.value)} />
+              <Input id="senha" label="Senha" type="text" placeholder="ABCD 1234 EFGH 5678" altura="h-[42px] sm:h-[50px]" largura="w-full" onChange={(e) => setPassAPI(e.target.value)} />
+            </div>
+            <Button
+              texto={isLoadingAPI ? "Gerando..." : "Gerar API Key"}
+              cor="bg-[#4F46E5]"
+              hover="hover:bg-[#231c9b]"
+              largura="w-full"
+              altura="h-[42px] sm:h-[48px]"
+              margem="mb-3 sm:mb-5 mt-6 sm:mt-8 md:mt-10"
+              onClick={() => gerarApiKey(nameAPI, emailAPI, passAPI)}
+            />
+          </>
+        )}
       </Modal>
 
 
