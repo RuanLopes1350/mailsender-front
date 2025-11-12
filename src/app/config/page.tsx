@@ -116,7 +116,7 @@ export default function ConfigPage() {
                             </TableCell>
                             <TableCell className='flex flex-row flex-1 items-center justify-end'>
                                 <div className="flex flex-col gap-3.5">
-                                    <label className="text-white font-medium text-[15.3px]" htmlFor="downloads">Retentativas</label>
+                                    <label className="text-[#3B82F6] font-medium text-[15.3px]" htmlFor="downloads">Retentativas</label>
                                     <div className="relative p-4 rounded-[10px] border border-[#3B82F6]/20 shadow-lg">
                                         <div className="flex justify-between text-white text-base font-semibold pl-[5px] pr-[5px] absolute inset-x-4 top-2 pointer-events-none">
                                             {[1, 2, 3, 4, 5].map(num => (
