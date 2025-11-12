@@ -2,11 +2,12 @@
 
 import { Settings } from 'lucide-react'
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { UserPlus, Users, UserX, UserPen } from 'lucide-react'
 import Button from '@/components/button'
 import Modal from '@/components/modal'
 import Input from '@/components/input'
+import { useApproveApiKey, useConfig } from '@/hooks/useData'
 
 export default function ConfigPage() {
     let agora = new Date();
@@ -21,18 +22,29 @@ export default function ConfigPage() {
         second: '2-digit'
     });
     let agoraFormatada = `${dataFormatada} ${horaFormatada}`;
-    const [aprovarApi, setAprovarApi] = useState<boolean>(false)
     const [activeModal, setActiveModal] = useState<string | null>(null)
 
-    const handleAprovarApiClick = async (estado: boolean) => {
-        if (estado === true) {
-            setAprovarApi(false)
-            return
-        } else {
-            setAprovarApi(true)
-            return
+    const { data: config, isLoading } = useConfig();
+    const { mutate: approve } = useApproveApiKey();
+    const [aprovarApi, setAprovarApi] = useState<boolean>(false)
+    const [retentativas, setRetentativas] = useState<number>(3)
+
+    // Sincroniza o estado local com os dados da API
+    useEffect(() => {
+        if (config?.data) {
+            setAprovarApi(config.data.aprovarApiKey);
+            setRetentativas(config.data.retentativas);
+        }
+    }, [config]);
+
+    const definirAprovarApiKey = async () => {
+        try {
+            approve()
+        } catch (error) {
+            console.error(error);
         }
     }
+
 
     return (
         <>
@@ -57,12 +69,14 @@ export default function ConfigPage() {
                                 </span>
                             </TableCell>
                             <TableCell className='flex flex-row flex-1 items-center justify-end'>
-                                {aprovarApi ? (
-                                    <div className='flex flex-row items-center transition cursor-pointer justify-end pr-1 pl-1 rounded-2xl bg-blue-900 focus:outline-none ring-1 ring-blue-900 h-7 w-16' onClick={() => handleAprovarApiClick(aprovarApi)}>
+                                {isLoading ? (
+                                    <div className='text-gray-400'>Carregando...</div>
+                                ) : aprovarApi ? (
+                                    <div className='flex flex-row items-center transition cursor-pointer justify-end pr-1 pl-1 rounded-2xl bg-blue-900 focus:outline-none ring-1 ring-blue-900 h-7 w-16' onClick={definirAprovarApiKey}>
                                         <div className='bg-white w-6 h-6 rounded-2xl'></div>
                                     </div>
                                 ) : (
-                                    <div className='flex flex-row items-center transition cursor-pointer justify-start pr-1 pl-1 rounded-2xl bg-gray-600 focus:outline-none ring-1 ring-blue-900 h-7 w-16' onClick={() => handleAprovarApiClick(aprovarApi)}>
+                                    <div className='flex flex-row items-center transition cursor-pointer justify-start pr-1 pl-1 rounded-2xl bg-gray-600 focus:outline-none ring-1 ring-blue-900 h-7 w-16' onClick={definirAprovarApiKey}>
                                         <div className='bg-white w-6 h-6 rounded-2xl'></div>
                                     </div>
                                 )}
@@ -116,14 +130,26 @@ export default function ConfigPage() {
                             </TableCell>
                             <TableCell className='flex flex-row flex-1 items-center justify-end'>
                                 <div className="flex flex-col gap-3.5">
-                                    <label className="text-[#3B82F6] font-medium text-[15.3px]" htmlFor="downloads">Retentativas</label>
+                                    <label className="text-[#3B82F6] font-medium text-[15.3px]" htmlFor="retentativas">
+                                        Retentativas: {retentativas}
+                                    </label>
                                     <div className="relative p-4 rounded-[10px] border border-[#3B82F6]/20 shadow-lg">
                                         <div className="flex justify-between text-white text-base font-semibold pl-[5px] pr-[5px] absolute inset-x-4 top-2 pointer-events-none">
                                             {[1, 2, 3, 4, 5].map(num => (
                                                 <span key={num} className="text-[#93C5FD] drop-shadow-sm">{num}</span>
                                             ))}
                                         </div>
-                                        <input id="downloads" type="range" step='1' min='1' max='5' className="w-full h-14 rounded-[10px] bg-[#0F172A] border-0 mt-6 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <input
+                                            id="retentativas"
+                                            type="range"
+                                            step='1'
+                                            min='1'
+                                            max='5'
+                                            value={retentativas}
+                                            onChange={(e) => setRetentativas(Number(e.target.value))}
+                                            disabled={isLoading}
+                                            className="w-full h-14 rounded-[10px] bg-[#0F172A] border-0 mt-6 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
                                     </div>
                                 </div>
                             </TableCell>

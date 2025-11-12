@@ -22,7 +22,7 @@ export const useGeneralStats = () => {
     return useQuery({
         queryKey: ['generalStats'],
         queryFn: api.getGeneralStats,
-        refetchInterval: 30000, // Atualiza a cada 30 segundos
+        refetchInterval: 10000, // Atualiza a cada 10 segundos
     });
 };
 
@@ -76,6 +76,28 @@ export const useReactivateApiKey = () => {
         mutationFn: (name: string) => api.reactivateApiKey(name),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['apiKeys'] });
+        },
+    });
+};
+
+// ==================== CONFIG ====================
+
+export const useConfig = () => {
+    return useQuery({
+        queryKey: ['config'],
+        queryFn: api.getConfigs,
+        refetchInterval: 10000, // Atualiza a cada 10 segundos
+    });
+};
+
+export const useApproveApiKey = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: () => api.approveApiKey(),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['apiKeys'] });
+            queryClient.invalidateQueries({ queryKey: ['config'] });
         },
     });
 };

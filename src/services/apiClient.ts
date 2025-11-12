@@ -10,6 +10,7 @@ import type {
     SendEmailRequest,
     SendEmailResponse,
     RequestLog,
+    ConfigResponse,
 } from '@/types/api';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URI || 'http://localhost:5016/api';
@@ -134,3 +135,15 @@ export const getMyEmails = async (): Promise<Email[]> => {
 };
 
 export default apiClient;
+
+// ==================== CONFIG ====================
+
+export const getConfigs = async (): Promise<ConfigResponse> => {
+    const { data } = await apiClient.get<ConfigResponse>('/config');
+    return data;
+};
+
+export const approveApiKey = async (): Promise<{ message: boolean }> => {
+    const { data } = await apiClient.post<{ message: boolean }>(`/config/aprovar`);
+    return data;
+}

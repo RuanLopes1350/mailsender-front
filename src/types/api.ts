@@ -114,3 +114,21 @@ export interface User {
     email: string;
     name?: string;
 }
+
+// ==================== CONFIG ====================
+
+export interface ConfigResponse {
+    success?: boolean;
+    data?: Config;
+    message?: string;
+}
+
+export interface Config {
+    _id: string;
+    aprovarApiKey: boolean;
+    retentativas: number;
+    intervaloRetentativas: number;
+    rateLimitRequests: number;
+    rateLimitWindowMs: number;
+    __v: number;
+}
