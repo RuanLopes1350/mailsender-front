@@ -18,8 +18,11 @@ import { useGenerateApiKey } from "@/hooks/useData"
 
 export default function Home() {
   const [activeModal, setActiveModal] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState("Testar Email");
+  const [activeTab, setActiveTab] = useState<string>("Testar Email");
   const [footerLinks, setFooterLinks] = useState(false);
+  const [botaoLink, setBotaoLink] = useState<boolean>(false);
+  const [botaoLink2, setBotaoLink2] = useState<boolean>(false);
+  const [templateAtivo, setTemplateAtivo] = useState<string>('generico')
 
   // Busca dados da API
   const { data: stats, isLoading: loadingStats, error: errorStats } = useGeneralStats();
@@ -276,7 +279,7 @@ export default function Home() {
                 <Input id="destinatario" type="email" label="Para (email) *" altura="" largura="" placeholder="destinatario@example.com" />
                 <Input id="assunto" type="text" label="Assunto *" altura="" largura="" placeholder="Assunto do E-mail" />
                 <div className="flex flex-col mt-4 mb-4 gap-2">
-                  <select className="p-4 rounded-[10px] border">
+                  <select onChange={(e) => { setTemplateAtivo(e.target.value) }} className="p-4 rounded-[10px] border">
                     <option disabled defaultValue={''}>Selecione um template</option>
                     <option value="bemvindo">Bem-Vindo</option>
                     <option value="generico">Genérico</option>
@@ -284,58 +287,180 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="bg-[#EEF2FF] rounded-2xl p-6">
-                <h2>Campos do Template: Bem-Vindo</h2>
-                <span>Todos os campos são opcionais, exceto os marcados com *</span>
-                <div className="flex flex-col gap-4 mt-4">
-                  <div className="flex flex-col md:flex-row gap-6 w-full">
-                    <div className="flex-1">
-                      <Input className="" id="nomeSistema" type="text" label="Nome do Sistema" altura="" largura="w-full" placeholder="Ex: Meu Sistema" />
+              {templateAtivo === 'bemvindo' && (
+                <>
+                  <div className="bg-[#EEF2FF] rounded-2xl p-6">
+                    <h2>Campos do Template: Bem-Vindo</h2>
+                    <span>Todos os campos são opcionais, exceto os marcados com *</span>
+                    <div className="flex flex-col gap-4 mt-4">
+                      <div className="flex flex-col md:flex-row gap-6 w-full">
+                        <div className="flex-1">
+                          <Input className="" id="nomeSistema" type="text" label="Nome do Sistema" altura="" largura="w-full" placeholder="Ex: Meu Sistema" />
+                        </div>
+                        <div className="flex-1">
+                          <Input id="nomeDestinatario" type="text" label="Nome do Destinatário" altura="" largura="w-full" placeholder="Ex: João Silva" />
+                        </div>
+                      </div>
+                      <div className="flex flex-col">
+                        <label htmlFor="mensagemPrincipal">Mensagem Principal</label>
+                        <textarea id="mensagemPrincipal" className="w-full h-32 mt-4 p-4 border rounded-md resize-none" placeholder="Mensagem de Boas-Vindas personalizada"></textarea>
+                      </div>
+                      <div className="flex flex-col">
+                        <label htmlFor="mensagemSecundaria">Mensagem Secundária</label>
+                        <textarea id="mensagemSecundaria" className="w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Texto adicional após a mensagem principal"></textarea>
+                      </div>
+                      <div className="flex flex-col">
+                        <label htmlFor="listaRecursos">Lista de Benefícios/Recursos (Separe por vírgulas)</label>
+                        <textarea id="listaRecursos" className="w-full h-25 mt-4 p-4 border rounded-md resize-none" placeholder="Recurso 1, Recurso 2, Recurso 3..."></textarea>
+                      </div>
+                      <div className="flex flex-col items-start w-full">
+                        <div className="flex flex-row gap-2">
+                          <input type="checkbox" name="exibirBotao" id="exibirBotao" checked={botaoLink} onChange={(e) => setBotaoLink(e.target.checked)} />
+                          <label htmlFor="exibirBotao">Exibir Botão de Ação</label>
+                        </div>
+                        {botaoLink && (
+                          <div className="flex flex-col md:flex-row gap-6 w-full">
+                            <div className="flex-1">
+                              <Input defaultValue="Começar Agora" className="" id="nomeSistema" type="text" label="Texto do Botão *" altura="" largura="w-full" placeholder="Ex: Começar Agora" />
+                            </div>
+                            <div className="flex-1">
+                              <Input id="nomeDestinatario" type="text" label="URL do Botão *" altura="" largura="w-full" placeholder="https://exemplo.com" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <label htmlFor="informacaoAdicional">Informações Adicionais</label>
+                      <textarea id="informacaoAdicional" className="w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Informações extras antes do footer"></textarea>
                     </div>
-                    <div className="flex-1">
-                      <Input className="" id="nomeDestinatario" type="text" label="Nome do Destinatário" altura="" largura="w-full" placeholder="Ex: João Silva" />
+                  </div>
+
+                  <div className="bg-[#FAF5FF] rounded-2xl p-6">
+                    <h2 className="font-bold text-black text-[18px]">Customização Visual</h2>
+                    <Input id="logoUrl" type="text" label="URL do Logo" altura="" largura="" placeholder="https://exemplo.com/logo.png" />
+                    <div className="flex flex-row items-center justify-between">
+                      <Input id="corHeader" type="color" label="Cor Primária (Header)" altura="h-16" largura="w-[500px]" placeholder="" />
+                      <Input id="corBotao" type="color" label="Cor do Botão" altura="h-16" largura="w-[500px]" placeholder="" />
+                      <Input id="corDestaque" type="color" label="Cor de Destaque" altura="h-16" largura="w-[500px]" placeholder="" />
                     </div>
                   </div>
-                  <div className="flex flex-col">
-                    <label htmlFor="mensagemPrincipal">Mensagem Principal</label>
-                    <textarea id="mensagemPrincipal" className="w-full h-32 mt-4 p-4 border rounded-md resize-none" placeholder="Mensagem de Boas-Vindas personalizada"></textarea>
-                  </div>
-                  <div className="flex flex-col">
-                    <label htmlFor="mensagemSecundaria">Mensagem Secundária</label>
-                    <textarea id="mensagemSecundaria" className="w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Texto adicional após a mensagem principal"></textarea>
-                  </div>
-                  <div className="flex flex-col">
-                    <label htmlFor="listaRecursos">Lista de Benefícios/Recursos (Separe por vírgulas)</label>
-                    <textarea id="listaRecursos" className="w-full h-25 mt-4 p-4 border rounded-md resize-none" placeholder="Recurso 1, Recurso 2, Recurso 3..."></textarea>
-                  </div>
-                </div>
-              </div>
 
-              <div className="bg-[#FAF5FF] rounded-2xl p-6">
-                <h2 className="font-bold text-black text-[18px]">Customização Visual</h2>
-                <Input id="logoUrl" type="text" label="URL do Logo" altura="" largura="" placeholder="https://exemplo.com/logo.png" />
-                <div className="flex flex-row items-center justify-between">
-                  <Input id="corHeader" type="color" label="Cor Primária (Header)" altura="h-16" largura="w-[500px]" placeholder="" />
-                  <Input id="corBotao" type="color" label="Cor do Botão" altura="h-16" largura="w-[500px]" placeholder="" />
-                  <Input id="corDestaque" type="color" label="Cor de Destaque" altura="h-16" largura="w-[500px]" placeholder="" />
-                </div>
-              </div>
-
-              <div className="bg-[#F9FAFB] rounded-2xl p-6">
-                <h2 className="font-bold text-black text-[18px]">Rodapé</h2>
-                <span>Texto do Footer</span>
-                <div className="flex flex-row gap-3 items-center">
-                  <input type="checkbox" name="footerLinks" id="footerLinks" checked={footerLinks} onChange={(e) => setFooterLinks(e.target.checked)} />
-                  <label htmlFor="footerLinks">Exibir Links no Footer</label>
-                </div>
-                {footerLinks && (
-                  <div className="flex flex-row gap-6 items-center justify-between">
-                    <Input id="linkSite" type="text" label="Link do Site" altura="" largura="w-[500px]" placeholder="https://site.com" />
-                    <Input id="linkSuporte" type="text" label="Link do Suporte" altura="" largura="w-[500px]" placeholder="https://suporte.com" />
-                    <Input id="linkPrivacidade" type="text" label="Link Privacidade" altura="" largura="w-[500px]" placeholder="https://privacidade.com" />
+                  <div className="bg-[#F9FAFB] rounded-2xl p-6">
+                    <h2 className="font-bold text-black text-[18px]">Rodapé</h2>
+                    <span>Texto do Footer</span>
+                    <div className="flex flex-row gap-3 items-center">
+                      <input type="checkbox" name="footerLinks" id="footerLinks" checked={footerLinks} onChange={(e) => setFooterLinks(e.target.checked)} />
+                      <label htmlFor="footerLinks">Exibir Links no Footer</label>
+                    </div>
+                    {footerLinks && (
+                      <div className="flex flex-row gap-6 items-center justify-between">
+                        <Input id="linkSite" type="text" label="Link do Site" altura="" largura="w-[500px]" placeholder="https://site.com" />
+                        <Input id="linkSuporte" type="text" label="Link do Suporte" altura="" largura="w-[500px]" placeholder="https://suporte.com" />
+                        <Input id="linkPrivacidade" type="text" label="Link Privacidade" altura="" largura="w-[500px]" placeholder="https://privacidade.com" />
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                </>
+              )}
+
+              {templateAtivo === 'generico' && (
+                <>
+                  <div className="bg-[#EEF2FF] rounded-2xl p-6">
+                    <h2>Campos do Template: Genérico</h2>
+                    <span>Todos os campos são opcionais, exceto os marcados com *</span>
+                    <div className="flex flex-col gap-4 mt-4">
+                      <div className="flex flex-col md:flex-row gap-6 w-full">
+                        <div className="flex-1">
+                          <Input className="" id="nomeSistema" type="text" label="Nome do Sistema" altura="" largura="w-full" placeholder="Ex: Meu Sistema" />
+                        </div>
+                        <div className="flex-1">
+                          <Input id="nomeDestinatario" type="text" label="Nome do Destinatário" altura="" largura="w-full" placeholder="Ex: João Silva" />
+                        </div>
+                      </div>
+                      <div className="flex flex-col">
+                        <label htmlFor="mensagemPrincipal">Mensagem Principal</label>
+                        <textarea id="mensagemPrincipal" className="w-full h-32 mt-4 p-4 border rounded-md resize-none" placeholder="Mensagem de Boas-Vindas personalizada"></textarea>
+                      </div>
+                      <div className="flex flex-col">
+                        <label htmlFor="conteudoAdicional">Conteúdo Adicional</label>
+                        <textarea id="conteudoAdicional" className="w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Texto adicional após a mensagem principal"></textarea>
+                      </div>
+                      <div className="flex flex-col">
+                        <label htmlFor="textoDestaque">Texto em Destaque</label>
+                        <textarea id="textoDestaque" className="w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Texto adicional após a mensagem principal"></textarea>
+                      </div>
+                      <div className="flex flex-col">
+                        <label htmlFor="listaRecursos">Lista de Itens (Separe por vírgulas)</label>
+                        <textarea id="listaRecursos" className="w-full h-25 mt-4 p-4 border rounded-md resize-none" placeholder="Item 1, Item 2, Item 3..."></textarea>
+                      </div>
+                      <div className="flex flex-col">
+                        <label htmlFor="listaRecursos">Tabela de Dados (Formato: Label: Valor, Label2: Valor2)</label>
+                        <textarea id="listaRecursos" className="w-full h-25 mt-4 p-4 border rounded-md resize-none" placeholder="Nome: João Silva, Data: 25/01/2025"></textarea>
+                      </div>
+                      <div className="flex flex-col items-start w-full">
+                        <div className="flex flex-row gap-2">
+                          <input type="checkbox" name="exibirBotao" id="exibirBotao" checked={botaoLink} onChange={(e) => setBotaoLink(e.target.checked)} />
+                          <label htmlFor="exibirBotao">Exibir Botão de Ação</label>
+                        </div>
+                        {botaoLink && (
+                          <div className="flex flex-col md:flex-row gap-6 w-full">
+                            <div className="flex-1">
+                              <Input defaultValue="Começar Agora" className="" id="nomeSistema" type="text" label="Texto do Botão *" altura="" largura="w-full" placeholder="Ex: Começar Agora" />
+                            </div>
+                            <div className="flex-1">
+                              <Input id="nomeDestinatario" type="text" label="URL do Botão *" altura="" largura="w-full" placeholder="https://exemplo.com" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col items-start w-full">
+                        <div className="flex flex-row gap-2">
+                          <input type="checkbox" name="exibirBotao2" id="exibirBotao2" checked={botaoLink2} onChange={(e) => setBotaoLink2(e.target.checked)} />
+                          <label htmlFor="exibirBotao2">Exibir Botão Secundário</label>
+                        </div>
+                        {botaoLink2 && (
+                          <div className="flex flex-col md:flex-row gap-6 w-full">
+                            <div className="flex-1">
+                              <Input defaultValue="Começar Agora" className="" id="nomeSistema" type="text" label="Texto do Botão *" altura="" largura="w-full" placeholder="Ex: Começar Agora" />
+                            </div>
+                            <div className="flex-1">
+                              <Input id="nomeDestinatario" type="text" label="URL do Botão *" altura="" largura="w-full" placeholder="https://exemplo.com" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <label htmlFor="informacaoAdicional">Informações Adicionais</label>
+                      <textarea id="informacaoAdicional" className="w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Informações extras antes do footer"></textarea>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#FAF5FF] rounded-2xl p-6">
+                    <h2 className="font-bold text-black text-[18px]">Customização Visual</h2>
+                    <Input id="logoUrl" type="text" label="URL do Logo" altura="" largura="" placeholder="https://exemplo.com/logo.png" />
+                    <div className="flex flex-row items-center justify-between">
+                      <Input id="corHeader" type="color" label="Cor Primária (Header)" altura="h-16" largura="w-[500px]" placeholder="" />
+                      <Input id="corBotao" type="color" label="Cor do Botão" altura="h-16" largura="w-[500px]" placeholder="" />
+                      <Input id="corDestaque" type="color" label="Cor de Destaque" altura="h-16" largura="w-[500px]" placeholder="" />
+                    </div>
+                  </div>
+
+                  <div className="bg-[#F9FAFB] rounded-2xl p-6">
+                    <h2 className="font-bold text-black text-[18px]">Rodapé</h2>
+                    <span>Texto do Footer</span>
+                    <div className="flex flex-row gap-3 items-center">
+                      <input type="checkbox" name="footerLinks" id="footerLinks" checked={footerLinks} onChange={(e) => setFooterLinks(e.target.checked)} />
+                      <label htmlFor="footerLinks">Exibir Links no Footer</label>
+                    </div>
+                    {footerLinks && (
+                      <div className="flex flex-row gap-6 items-center justify-between">
+                        <Input id="linkSite" type="text" label="Link do Site" altura="" largura="w-[500px]" placeholder="https://site.com" />
+                        <Input id="linkSuporte" type="text" label="Link do Suporte" altura="" largura="w-[500px]" placeholder="https://suporte.com" />
+                        <Input id="linkPrivacidade" type="text" label="Link Privacidade" altura="" largura="w-[500px]" placeholder="https://privacidade.com" />
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
