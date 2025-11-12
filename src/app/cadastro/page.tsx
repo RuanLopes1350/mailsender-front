@@ -8,6 +8,7 @@ import { useState } from "react"
 import { apiKeySchema } from "../../validations/apiKey"
 import { ZodError } from "zod"
 import { IZodError } from "@/types/interfaces"
+import { GenerateApiKeyResponse } from "@/types/api"
 
 export default function CadastroPage() {
     const generateApiKey = useGenerateApiKey();
@@ -18,7 +19,7 @@ export default function CadastroPage() {
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<IZodError[] | null>(null);
-    const [resposta, setResposta] = useState<string | null>(null);
+    const [resposta, setResposta] = useState<GenerateApiKeyResponse | null>(null);
     const [copiado, setCopiado] = useState(false);
 
     const gerarApiKey = async (name: string, email: string, pass: string) => {
@@ -34,7 +35,7 @@ export default function CadastroPage() {
         try {
             apiKeySchema.parse(apiKey)
             let response = await generateApiKey.mutateAsync({ name, email, pass });
-            setResposta(response.apiKey);
+            setResposta(response);
         } catch (error: any) {
             if (error instanceof ZodError) {
                 const mensagensErro: IZodError[] = error.issues.map(err => {
@@ -54,7 +55,7 @@ export default function CadastroPage() {
 
     const copiarParaClipboard = async () => {
         try {
-            await navigator.clipboard.writeText(resposta || '');
+            await navigator.clipboard.writeText(resposta?.apiKey || '');
             setCopiado(true);
             // Reseta após 2 segundos
             setTimeout(() => setCopiado(false), 2000);
@@ -80,8 +81,13 @@ export default function CadastroPage() {
                         <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-[10px] p-4 sm:p-6">
                             <h1 className="text-[#166534] font-bold text-sm sm:text-base">⚠ATENÇÃO:</h1>
                             <p className="text-[#15803D] text-[10px] sm:text-[11px]">Guarde esta chave em local seguro. Ela não será mostrada novamente!</p>
+                            {resposta.isActive === false && (
+                                <>
+                                    <span className="text-[#dc4109] text-[10px] sm:text-[11px]">Contate seu administrador para que ele aprove sua chave. Somente poderá ser usada após aprovada pelo Administrador!</span>
+                                </>
+                            )}
                             <div className="h-[40px] sm:h-[44px] w-full bg-white rounded-[10px] flex items-center mt-3 sm:mt-4 mb-3 sm:mb-4 p-3 sm:p-4 overflow-hidden text-xs sm:text-sm">
-                                {resposta.substring(0, 29) + '...'}
+                                {resposta.apiKey.substring(0, 29) + '...'}
                             </div>
                             <Button
                                 texto={copiado ? "✓ Copiado!" : "Copiar API Key"}
@@ -93,7 +99,7 @@ export default function CadastroPage() {
                                 onClick={copiarParaClipboard}
                             />
                         </div>
-                        <Button texto="Voltar" cor="bg-[#4F46E5]" hover="hover:bg-[#231c9b]" largura="w-full" altura="h-[42px] sm:h-[48px]" margem="mb-3 sm:mb-5 mt-6 sm:mt-8 md:mt-10" onClick={() => setResposta('')} />
+                        <Button texto="Voltar" cor="bg-[#4F46E5]" hover="hover:bg-[#231c9b]" largura="w-full" altura="h-[42px] sm:h-[48px]" margem="mb-3 sm:mb-5 mt-6 sm:mt-8 md:mt-10" onClick={() => setResposta(null)} />
                     </AuthPanel>
                 </div>
             ) : (

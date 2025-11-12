@@ -73,6 +73,7 @@ export interface GenerateApiKeyResponse {
     name: string;
     message: string;
     apiKey: string;
+    isActive: boolean;
 }
 
 export interface SendEmailRequest {
