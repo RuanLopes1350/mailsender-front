@@ -131,3 +131,16 @@ export const useSendEmail = () => {
         },
     });
 };
+
+// ==================== CONFIG ====================
+
+export const useCreateAdminUser = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: { username: string; password: string }) => api.createAdminUser(data.username, data.password),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['config'] });
+        },
+    });
+};

@@ -7,7 +7,10 @@ import { UserPlus, Users, UserX, UserPen } from 'lucide-react'
 import Button from '@/components/button'
 import Modal from '@/components/modal'
 import Input from '@/components/input'
-import { useApproveApiKey, useConfig } from '@/hooks/useData'
+import { useApproveApiKey, useConfig, useCreateAdminUser } from '@/hooks/useData'
+import { IZodError } from '@/types/interfaces'
+import { ZodError } from 'zod'
+import { adminSchema } from '@/validations/admin'
 
 export default function ConfigPage() {
     let agora = new Date();
@@ -29,6 +32,14 @@ export default function ConfigPage() {
     const [aprovarApi, setAprovarApi] = useState<boolean>(false)
     const [retentativas, setRetentativas] = useState<number>(3)
 
+    // Estados para criação de admin
+    const [novoAdminUsername, setNovoAdminUsername] = useState<string>('');
+    const [novoAdminPassword, setNovoAdminPassword] = useState<string>('');
+    const [novoAdminCarregando, setNovoAdminCarregando] = useState<boolean>(false);
+    const [errorAdmin, setErrorAdmin] = useState<IZodError[] | null>(null);
+    const [respostaAdmin, setRespostaAdmin] = useState<{ message: string } | null>(null);
+    const createAdminMutation = useCreateAdminUser();
+
     // Sincroniza o estado local com os dados da API
     useEffect(() => {
         if (config?.data) {
@@ -45,6 +56,45 @@ export default function ConfigPage() {
         }
     }
 
+    const cadastrarNovoAdmin = async (username: string, password: string) => {
+        setErrorAdmin(null);
+        setNovoAdminCarregando(true);
+
+        const adminData = {
+            login: username,
+            senha: password
+        }
+
+        try {
+            adminSchema.parse(adminData);
+            const response = await createAdminMutation.mutateAsync({ username, password });
+            setRespostaAdmin(response);
+            // Limpa os campos após sucesso
+            setNovoAdminUsername('');
+            setNovoAdminPassword('');
+        } catch (error: any) {
+            if (error instanceof ZodError) {
+                const mensagensErro: IZodError[] = error.issues.map(err => {
+                    return {
+                        mensagem: err.message
+                    };
+                });
+                setErrorAdmin(mensagensErro);
+            } else {
+                setErrorAdmin([{ mensagem: error.message || 'Erro ao criar administrador' }]);
+            }
+        } finally {
+            setNovoAdminCarregando(false);
+        }
+    }
+
+    const resetarModalAdmin = () => {
+        setRespostaAdmin(null);
+        setErrorAdmin(null);
+        setNovoAdminUsername('');
+        setNovoAdminPassword('');
+        setActiveModal(null);
+    }
 
     return (
         <>
@@ -206,13 +256,72 @@ export default function ConfigPage() {
             <Modal
                 titulo="Adicionar Novo Administrador"
                 isOpen={activeModal === 'novo'}
-                onClose={() => setActiveModal(null)}
+                onClose={resetarModalAdmin}
             >
-                <div className=''>
-                    <Input label='Login' altura='h-10' largura='' id='login' type='text' placeholder='Login' />
-                    <Input label='Senha' altura='h-10' largura='' id='senha' type='password' placeholder='Senha' />
-                    <Button margem='ml-93 mt-8' texto='Cadastrar' cor='bg-green-600' hover='bg-green-900' altura='h-10' largura='w-35' icone={<UserPlus />} />
-                </div>
+                {respostaAdmin ? (
+                    <>
+                        <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-[10px] p-4 sm:p-6">
+                            <h1 className="text-[#166534] font-bold text-sm sm:text-base">✓ Sucesso!</h1>
+                            <p className="text-[#15803D] text-[12px] sm:text-[14px] mt-2">
+                                {respostaAdmin.message}
+                            </p>
+                        </div>
+                        <Button
+                            texto="Fechar"
+                            cor="bg-[#4F46E5]"
+                            hover="hover:bg-[#231c9b]"
+                            largura="w-full"
+                            altura="h-[42px] sm:h-[48px]"
+                            margem="mt-6"
+                            onClick={resetarModalAdmin}
+                        />
+                    </>
+                ) : (
+                    <>
+                        {errorAdmin && errorAdmin.length > 0 && (
+                            <div className="bg-[#FEF2F2] border border-[#FCA5A5] rounded-[10px] p-4 mb-4">
+                                <h2 className="text-[#DC2626] font-bold text-sm">⚠ Erros de validação:</h2>
+                                <ul className="list-disc list-inside text-[#DC2626] text-xs mt-2">
+                                    {errorAdmin.map((erro, index) => (
+                                        <li key={index}>{erro.mensagem}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                        <div className="space-y-3 sm:space-y-4">
+                            <Input
+                                label='Login'
+                                altura='h-[42px] sm:h-[50px]'
+                                largura='w-full'
+                                id='login'
+                                type='text'
+                                placeholder='Login do administrador'
+                                value={novoAdminUsername}
+                                onChange={(e) => setNovoAdminUsername(e.target.value)}
+                            />
+                            <Input
+                                label='Senha'
+                                altura='h-[42px] sm:h-[50px]'
+                                largura='w-full'
+                                id='senha'
+                                type='password'
+                                placeholder='Senha (mínimo 8 caracteres)'
+                                value={novoAdminPassword}
+                                onChange={(e) => setNovoAdminPassword(e.target.value)}
+                            />
+                        </div>
+                        <Button
+                            margem='mt-6 sm:mt-8'
+                            texto={novoAdminCarregando ? 'Cadastrando...' : 'Cadastrar'}
+                            cor='bg-green-600'
+                            hover='hover:bg-green-900'
+                            altura='h-[42px] sm:h-[48px]'
+                            largura='w-full'
+                            icone={<UserPlus />}
+                            onClick={() => cadastrarNovoAdmin(novoAdminUsername, novoAdminPassword)}
+                        />
+                    </>
+                )}
             </Modal>
         </>
     )

@@ -126,7 +126,7 @@ export default function Home() {
 
   return (
     <>
-    {/* modal zone */}
+      {/* modal zone */}
       <Modal
         titulo="Adicionar Nova Chave de API"
         isOpen={activeModal === 'novaApi'}
@@ -177,11 +177,13 @@ export default function Home() {
         )}
       </Modal>
 
-      <Modal titulo="confirmar exclusão de chave" isOpen={activeModal === 'confirmDeleteApiKey'} onClose={() => setActiveModal(null)}>
+      <Modal
+        titulo="confirmar exclusão de chave" isOpen={activeModal === 'confirmDeleteApiKey'} onClose={() => setActiveModal(null)}
+      >
         <div>Tem certeza que deseja excluir esta chave de API? Esta ação é irreversível.</div>
         <div className="flex flex-row gap-4 mt-6">
           <Button texto="Cancelar" cor="bg-gray-500" hover="hover:bg-gray-700" largura="w-full" altura="h-[42px] sm:h-[48px]" onClick={() => setActiveModal(null)} />
-          <Button texto="Excluir" cor="bg-red-600" hover="hover:bg-red-800" largura="w-full" altura="h-[42px] sm:h-[48px]" onClick={() => {deletarChave(chaveParaExcluir?.nome || ''), setActiveModal(null)}} />
+          <Button texto="Excluir" cor="bg-red-600" hover="hover:bg-red-800" largura="w-full" altura="h-[42px] sm:h-[48px]" onClick={() => { deletarChave(chaveParaExcluir?.nome || ''), setActiveModal(null) }} />
         </div>
       </Modal>
 

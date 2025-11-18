@@ -147,3 +147,10 @@ export const approveApiKey = async (): Promise<{ message: boolean }> => {
     const { data } = await apiClient.post<{ message: boolean }>(`/config/aprovar`);
     return data;
 }
+
+// ==================== ADMIN ====================
+
+export const createAdminUser = async (username: string, password: string): Promise<{ message: string }> => {
+    const { data } = await apiClient.post<{ message: string }>('/admin/criar', { username, password });
+    return data;
+}
