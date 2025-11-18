@@ -14,7 +14,7 @@ import { IZodError } from "@/types/interfaces";
 import { ZodError } from "zod";
 import { apiKeySchema } from "../validations/apiKey";
 import { useGenerateApiKey } from "@/hooks/useData"
-import { GenerateApiKeyResponse } from "@/types/api";
+import { ApiKey, GenerateApiKeyResponse } from "@/types/api";
 
 
 export default function Home() {
@@ -24,6 +24,7 @@ export default function Home() {
   const [botaoLink, setBotaoLink] = useState<boolean>(false);
   const [botaoLink2, setBotaoLink2] = useState<boolean>(false);
   const [templateAtivo, setTemplateAtivo] = useState<string>('')
+  const [chaveParaExcluir, setChaveParaExcluir] = useState<ApiKey | null>(null);
 
   // Busca dados da API
   const { data: stats, isLoading: loadingStats, error: errorStats } = useGeneralStats();
@@ -125,6 +126,7 @@ export default function Home() {
 
   return (
     <>
+    {/* modal zone */}
       <Modal
         titulo="Adicionar Nova Chave de API"
         isOpen={activeModal === 'novaApi'}
@@ -175,6 +177,13 @@ export default function Home() {
         )}
       </Modal>
 
+      <Modal titulo="confirmar exclusão de chave" isOpen={activeModal === 'confirmDeleteApiKey'} onClose={() => setActiveModal(null)}>
+        <div>Tem certeza que deseja excluir esta chave de API? Esta ação é irreversível.</div>
+        <div className="flex flex-row gap-4 mt-6">
+          <Button texto="Cancelar" cor="bg-gray-500" hover="hover:bg-gray-700" largura="w-full" altura="h-[42px] sm:h-[48px]" onClick={() => setActiveModal(null)} />
+          <Button texto="Excluir" cor="bg-red-600" hover="hover:bg-red-800" largura="w-full" altura="h-[42px] sm:h-[48px]" onClick={() => {deletarChave(chaveParaExcluir?.nome || ''), setActiveModal(null)}} />
+        </div>
+      </Modal>
 
       <div className="flex flex-col md:flex-row gap-4 md:gap-24 px-4 md:px-16">
         <Tab icon='/dashboard' text='Dashboard' selected={activeTab === 'Dashboard'} onSelect={() => setActiveTab('Dashboard')} />
@@ -279,7 +288,7 @@ export default function Home() {
                         <TableCell>
                           <div className="flex flex-row gap-2">
                             <img className='cursor-pointer' src={key.ativa ? "/deactivate.png" : "/activate.png"} onClick={() => key.ativa ? inativarChave(key.nome) : reativarChave(key.nome)} draggable='false' />
-                            <img className='cursor-pointer' src="/erase.png" onClick={() => deletarChave(key.nome)} draggable='false' />
+                            <img className='cursor-pointer' src="/erase.png" onClick={() => { setChaveParaExcluir(key); setActiveModal('confirmDeleteApiKey'); }} draggable='false' />
                           </div>
                         </TableCell>
                       </TableRow>
