@@ -15,6 +15,7 @@ export interface RequestStats {
 export interface Email {
     _id: string;
     to: string;
+    sender: string;
     subject: string;
     template: string;
     status: 'pending' | 'sent' | 'failed';

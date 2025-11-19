@@ -219,6 +219,7 @@ export default function Home() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Data</TableHead>
+                      <TableHead>Origem</TableHead>
                       <TableHead>Para</TableHead>
                       <TableHead>Assunto</TableHead>
                       <TableHead>Template</TableHead>
@@ -230,6 +231,7 @@ export default function Home() {
                       stats.recentEmails.map((email, index) => (
                         <TableRow key={email._id || `email-${index}`}>
                           <TableCell>{formatDate(email.createdAt)}</TableCell>
+                          <TableCell>{email.sender}</TableCell>
                           <TableCell>{email.to}</TableCell>
                           <TableCell>{email.subject}</TableCell>
                           <TableCell>{email.template}</TableCell>
