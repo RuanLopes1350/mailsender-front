@@ -187,6 +187,8 @@ export default function Home() {
         </div>
       </Modal>
 
+      <Modal titulo="" onClose={() => { setActiveModal(null) }} isOpen={activeModal === 'detailsEmailsModal'}>A</Modal>
+
       <div className="flex flex-col md:flex-row gap-4 md:gap-24 px-4 md:px-16">
         <Tab icon='/dashboard' text='Dashboard' selected={activeTab === 'Dashboard'} onSelect={() => setActiveTab('Dashboard')} />
         <Tab icon='/keys' text='API Keys' selected={activeTab === 'API Keys'} onSelect={() => setActiveTab('API Keys')} />
@@ -229,9 +231,9 @@ export default function Home() {
                   <TableBody>
                     {stats?.recentEmails && stats.recentEmails.length > 0 ? (
                       stats.recentEmails.map((email, index) => (
-                        <TableRow key={email._id || `email-${index}`}>
+                        <TableRow className="cursor-pointer" onClick={() => setActiveModal('detailsEmailsModal')} key={email._id || `email-${index}`}>
                           <TableCell>{formatDate(email.createdAt)}</TableCell>
-                          <TableCell>{email.sender}</TableCell>
+                          <TableCell>{email.apiKeyUser.nome}</TableCell>
                           <TableCell>{email.to}</TableCell>
                           <TableCell>{email.subject}</TableCell>
                           <TableCell>{email.template}</TableCell>
@@ -246,6 +248,7 @@ export default function Home() {
                       </TableRow>
                     )}
                   </TableBody>
+                  <TableCaption><span className="cursor-pointer text-blue-700 hover:underline">Ver todos os emails</span></TableCaption>
                 </Table>
               </div>
             </>

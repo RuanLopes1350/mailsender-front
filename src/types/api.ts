@@ -19,7 +19,7 @@ export interface Email {
     subject: string;
     template: string;
     status: 'pending' | 'sent' | 'failed';
-    apiKeyUser: string;
+    apiKeyUser: ApiKey;
     createdAt: string;
     sentAt?: string;
     error?: string;
