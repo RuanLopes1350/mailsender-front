@@ -140,6 +140,13 @@ export const useEmailDetails = (emailId: string, enabled: boolean = false) => {
     });
 }
 
+export const useAllEmails = () => {
+    return useQuery({
+        queryKey: ['allEmails'],
+        queryFn: api.getAllEmails,
+    });
+};
+
 // ==================== CONFIG ====================
 
 export const useCreateAdminUser = () => {

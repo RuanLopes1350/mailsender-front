@@ -331,7 +331,7 @@ export default function Home() {
                       </TableRow>
                     )}
                   </TableBody>
-                  <TableCaption><span className="cursor-pointer text-blue-700 hover:underline">Ver todos os emails</span></TableCaption>
+                  <TableCaption><Link className="cursor-pointer text-blue-700 hover:underline" href="/todos_emails">Ver todos os emails</Link></TableCaption>
                 </Table>
               </div>
             </>

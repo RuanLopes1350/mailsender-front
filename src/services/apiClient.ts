@@ -138,7 +138,12 @@ export const getMyEmails = async (): Promise<Email[]> => {
 export const getEmailDetails = async (emailId: string): Promise<EmailDetails> => {
     const { data } = await apiClient.get<EmailDetails>(`/emails/detalhes/${emailId}`);
     return data;
-}
+};
+
+export const getAllEmails = async (): Promise<Email[]> => {
+    const { data } = await apiClient.get<Email[]>('/emails/todos');
+    return data;
+};
 
 export default apiClient;
 
