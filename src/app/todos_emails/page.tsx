@@ -117,7 +117,7 @@ export default function TodosEmailsPage() {
                                 <Button
                                     onClick={async () => {
                                         try {
-                                            await generatePdf(emailDetails.data)
+                                            await generatePdf(emailDetails.data, `email-detalhes-${emailDetails._id}.pdf`);
                                         } catch (error) {
                                             console.error('Erro ao gerar PDF:', error)
                                         }

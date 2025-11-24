@@ -1,6 +1,6 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
 
-export async function generatePdf(emailData: any): Promise<void> {
+export async function generatePdf(emailData: any, nomeArquivo?: string): Promise<void> {
     try {
         const pdfDoc = await PDFDocument.create()
         const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman)
@@ -269,7 +269,7 @@ export async function generatePdf(emailData: any): Promise<void> {
         })
 
         const pdfBytes = await pdfDoc.save()
-        downloadPdf(pdfBytes, 'email-detalhes.pdf')
+        downloadPdf(pdfBytes, nomeArquivo || 'email-detalhes.pdf')
     } catch (error) {
         console.error('Erro ao gerar PDF:', error)
         alert('Erro ao gerar PDF. Verifique o console para mais detalhes.')
