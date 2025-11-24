@@ -11,6 +11,7 @@ import type {
     SendEmailResponse,
     RequestLog,
     ConfigResponse,
+    EmailDetails,
 } from '@/types/api';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URI || 'http://localhost:5016/api';
@@ -133,6 +134,11 @@ export const getMyEmails = async (): Promise<Email[]> => {
     const { data } = await apiClient.get<Email[]>('/emails/meus');
     return data;
 };
+
+export const getEmailDetails = async (emailId: string): Promise<EmailDetails> => {
+    const { data } = await apiClient.get<EmailDetails>(`/emails/detalhes/${emailId}`);
+    return data;
+}
 
 export default apiClient;
 

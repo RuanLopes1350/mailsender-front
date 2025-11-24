@@ -5,7 +5,7 @@ import Tab from "@/components/tab";
 import CardInfo from "@/components/card-info";
 import Link from "next/link";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useGeneralStats, useApiKeys, useDeactivateApiKey, useReactivateApiKey, useRevokeApiKey } from "@/hooks/useData";
+import { useGeneralStats, useApiKeys, useDeactivateApiKey, useReactivateApiKey, useRevokeApiKey, useEmailDetails } from "@/hooks/useData";
 import { formatDate, EmailStatusBadge, ApiKeyStatusBadge, HttpMethodBadge, StatusCodeBadge } from "@/components/badges";
 import Button from "@/components/button";
 import Modal from "@/components/modal";
@@ -15,6 +15,7 @@ import { ZodError } from "zod";
 import { apiKeySchema } from "../validations/apiKey";
 import { useGenerateApiKey } from "@/hooks/useData"
 import { ApiKey, GenerateApiKeyResponse } from "@/types/api";
+import { generatePdf } from "@/utils/generatePdf";
 
 
 export default function Home() {
@@ -72,6 +73,12 @@ export default function Home() {
   const [copiadoAPI, setCopiadoAPI] = useState(false);
   const generateApiKey = useGenerateApiKey();
 
+  const [emailId, setEmailId] = useState<string>('');
+  const [modalEmailAberto, setModalEmailAberto] = useState<boolean>(false);
+
+  // Busca detalhes apenas quando o modal está aberto
+  const { data: emailDetails, isLoading: loadingEmailDetails } = useEmailDetails(emailId, modalEmailAberto);
+
   const gerarApiKey = async (name: string, email: string, pass: string) => {
     setErrorAPI(null);
     setIsLoadingAPI(true);
@@ -115,6 +122,17 @@ export default function Home() {
     }
   }
 
+  const abrirModalDetalhes = (id: string) => {
+    setEmailId(id);
+    setModalEmailAberto(true);
+    setActiveModal('detailsEmailsModal');
+  }
+
+  const fecharModalDetalhes = () => {
+    setModalEmailAberto(false);
+    setEmailId('');
+    setActiveModal(null);
+  }
 
   // Debug
   console.log('Stats:', stats);
@@ -187,7 +205,72 @@ export default function Home() {
         </div>
       </Modal>
 
-      <Modal titulo="" onClose={() => { setActiveModal(null) }} isOpen={activeModal === 'detailsEmailsModal'}>A</Modal>
+      <Modal titulo="Detalhes do Email" onClose={fecharModalDetalhes} isOpen={activeModal === 'detailsEmailsModal'}>
+        {loadingEmailDetails ? (
+          <div className="text-center p-10">Carregando detalhes...</div>
+        ) : emailDetails ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="font-semibold text-sm text-gray-600">Para:</label>
+                <p className="text-gray-900">{emailDetails.to}</p>
+              </div>
+              <div>
+                <label className="font-semibold text-sm text-gray-600">De:</label>
+                <p className="text-gray-900">{emailDetails.sender || 'N/A'}</p>
+              </div>
+              <div>
+                <label className="font-semibold text-sm text-gray-600">Assunto:</label>
+                <p className="text-gray-900">{emailDetails.subject}</p>
+              </div>
+              <div>
+                <label className="font-semibold text-sm text-gray-600">Template:</label>
+                <p className="text-gray-900">{emailDetails.template}</p>
+              </div>
+              <div>
+                <label className="font-semibold text-sm text-gray-600">Status:</label>
+                <EmailStatusBadge status={emailDetails.status} />
+              </div>
+              <div>
+                <label className="font-semibold text-sm text-gray-600">Criado em:</label>
+                <p className="text-gray-900">{formatDate(emailDetails.createdAt)}</p>
+              </div>
+              {emailDetails.sentAt && (
+                <div>
+                  <label className="font-semibold text-sm text-gray-600">Enviado em:</label>
+                  <p className="text-gray-900">{formatDate(emailDetails.sentAt)}</p>
+                </div>
+              )}
+              {emailDetails.error && (
+                <div className="col-span-2">
+                  <label className="font-semibold text-sm text-red-600">Erro:</label>
+                  <p className="text-red-900 bg-red-50 p-3 rounded-md">{emailDetails.error}</p>
+                </div>
+              )}
+            </div>
+            {emailDetails.data && (
+              <div className="flex flex-col">
+                <Button 
+                  onClick={async () => {
+                    try {
+                      await generatePdf(emailDetails.data)
+                    } catch (error) {
+                      console.error('Erro ao gerar PDF:', error)
+                    }
+                  }} 
+                  extraClassName="hover:bg-green-600" 
+                  texto="📄 Baixar Corpo do E-Mail (PDF)" 
+                  altura="h-[42px] sm:h-[48px]" 
+                  largura="w-full" 
+                  cor="bg-green-500" 
+                />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center p-10 text-gray-500">Nenhum detalhe disponível</div>
+        )}
+      </Modal>
 
       <div className="flex flex-col md:flex-row gap-4 md:gap-24 px-4 md:px-16">
         <Tab icon='/dashboard' text='Dashboard' selected={activeTab === 'Dashboard'} onSelect={() => setActiveTab('Dashboard')} />
@@ -231,7 +314,7 @@ export default function Home() {
                   <TableBody>
                     {stats?.recentEmails && stats.recentEmails.length > 0 ? (
                       stats.recentEmails.map((email, index) => (
-                        <TableRow className="cursor-pointer" onClick={() => setActiveModal('detailsEmailsModal')} key={email._id || `email-${index}`}>
+                        <TableRow className="cursor-pointer" onClick={() => abrirModalDetalhes(email._id)} key={email._id || `email-${index}`}>
                           <TableCell>{formatDate(email.createdAt)}</TableCell>
                           <TableCell>{email.sender}</TableCell>
                           <TableCell>{email.to}</TableCell>

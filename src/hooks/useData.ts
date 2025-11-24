@@ -132,6 +132,14 @@ export const useSendEmail = () => {
     });
 };
 
+export const useEmailDetails = (emailId: string, enabled: boolean = false) => {
+    return useQuery({
+        queryKey: ['emailDetails', emailId],
+        queryFn: () => api.getEmailDetails(emailId),
+        enabled: enabled && !!emailId, // Só busca se enabled for true e emailId existir
+    });
+}
+
 // ==================== CONFIG ====================
 
 export const useCreateAdminUser = () => {

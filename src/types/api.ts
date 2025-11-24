@@ -19,10 +19,14 @@ export interface Email {
     subject: string;
     template: string;
     status: 'pending' | 'sent' | 'failed';
-    apiKeyUser: ApiKey;
+    apiKeyUser?: ApiKey;
     createdAt: string;
     sentAt?: string;
     error?: string;
+}
+
+export interface EmailDetails extends Email {
+    data?: Record<string, any>;
 }
 
 export interface ApiKey {
