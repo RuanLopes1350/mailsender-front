@@ -233,7 +233,7 @@ export default function Home() {
                       stats.recentEmails.map((email, index) => (
                         <TableRow className="cursor-pointer" onClick={() => setActiveModal('detailsEmailsModal')} key={email._id || `email-${index}`}>
                           <TableCell>{formatDate(email.createdAt)}</TableCell>
-                          <TableCell>{email.apiKeyUser.nome}</TableCell>
+                          <TableCell>{email.sender}</TableCell>
                           <TableCell>{email.to}</TableCell>
                           <TableCell>{email.subject}</TableCell>
                           <TableCell>{email.template}</TableCell>
