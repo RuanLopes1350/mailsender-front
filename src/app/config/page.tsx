@@ -7,10 +7,11 @@ import { UserPlus, Users, UserX, UserPen } from 'lucide-react'
 import Button from '@/components/button'
 import Modal from '@/components/modal'
 import Input from '@/components/input'
-import { useApproveApiKey, useConfig, useCreateAdminUser } from '@/hooks/useData'
+import { useApproveApiKey, useConfig, useCreateAdminUser, useAllAdmins } from '@/hooks/useData'
 import { IZodError } from '@/types/interfaces'
 import { ZodError } from 'zod'
 import { adminSchema } from '@/validations/admin'
+import { IAdmin } from '@/types/api'
 
 export default function ConfigPage() {
     let agora = new Date();
@@ -36,9 +37,18 @@ export default function ConfigPage() {
     const [novoAdminUsername, setNovoAdminUsername] = useState<string>('');
     const [novoAdminPassword, setNovoAdminPassword] = useState<string>('');
     const [novoAdminCarregando, setNovoAdminCarregando] = useState<boolean>(false);
+    const [todosAdmin, setTodosAdmin] = useState<IAdmin[]>([]);
     const [errorAdmin, setErrorAdmin] = useState<IZodError[] | null>(null);
     const [respostaAdmin, setRespostaAdmin] = useState<{ message: string } | null>(null);
     const createAdminMutation = useCreateAdminUser();
+
+    const allAdmin = useAllAdmins();
+
+    useEffect(() => {
+        if (allAdmin.data) {
+            setTodosAdmin(allAdmin.data);
+        }
+    }, [allAdmin.data]);
 
     // Sincroniza o estado local com os dados da API
     useEffect(() => {

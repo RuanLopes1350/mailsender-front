@@ -165,3 +165,8 @@ export const createAdminUser = async (username: string, password: string): Promi
     const { data } = await apiClient.post<{ message: string }>('/admin/criar', { username, password });
     return data;
 }
+
+export const getAllAdmins = async (): Promise<any> => {
+    const { data } = await apiClient.get<any>('/admin/listar');
+    return data;
+}

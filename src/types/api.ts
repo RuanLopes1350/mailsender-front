@@ -138,3 +138,11 @@ export interface Config {
     rateLimitWindowMs: number;
     __v: number;
 }
+
+// ==================== ADMIN ====================
+
+export interface IAdmin {
+    _id: string;
+    username: string;
+    password: string;
+}

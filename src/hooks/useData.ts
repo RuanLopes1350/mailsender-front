@@ -159,3 +159,10 @@ export const useCreateAdminUser = () => {
         },
     });
 };
+
+export const useAllAdmins = () => {
+    return useQuery({
+        queryKey: ['allAdmins'],
+        queryFn: api.getAllAdmins,
+    });
+}
