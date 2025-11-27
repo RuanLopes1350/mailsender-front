@@ -15,6 +15,14 @@ import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/p
 
 const ITEMS_PER_PAGE = 10;
 
+interface FilterParams {
+    status?: string;
+    sender?: string;
+    to?: string;
+    sentAfter?: string;
+    sentBefore?: string;
+}
+
 export default function TodosEmailsPage() {
     const [activeModal, setActiveModal] = useState<string | null>(null)
     const [emailId, setEmailId] = useState<string>('');
@@ -26,6 +34,8 @@ export default function TodosEmailsPage() {
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(0)
     const [totalDocs, setTotalDocs] = useState(0);
+    const [filters, setFilters] = useState<FilterParams>({});
+    const [isFiltering, setIsFiltering] = useState(false);
 
     // Atualiza a lista de emails quando todos os emails são carregados
     useEffect(() => {
@@ -65,6 +75,45 @@ export default function TodosEmailsPage() {
         setModalEmailAberto(false);
         setEmailId('');
         setActiveModal(null);
+    }
+
+    const aplicarFiltros = () => {
+        if (!allEmails) return;
+
+        setCurrentPage(1);
+        setIsFiltering(true);
+
+        let emailsFiltrados = allEmails.filter(email => {
+            if (filters.status && email.status !== filters.status) return false;
+            if (filters.sender && !email.sender.toLowerCase().includes(filters.sender.toLowerCase())) return false;
+            if (filters.to && !email.to.toLowerCase().includes(filters.to.toLowerCase())) return false;
+            if (filters.sentAfter && email.sentAt) {
+                const dataSentAt = new Date(email.sentAt).getTime();
+                const dataSentAfter = new Date(filters.sentAfter).getTime();
+                if (dataSentAt < dataSentAfter) return false;
+            }
+            if (filters.sentBefore && email.sentAt) {
+                const dataSentAt = new Date(email.sentAt).getTime();
+                const dataSentBefore = new Date(filters.sentBefore).getTime();
+                if (dataSentAt > dataSentBefore) return false;
+            }
+            return true;
+        });
+
+        setTodosEmails(emailsFiltrados);
+        setTotalDocs(emailsFiltrados.length);
+        setTotalPages(Math.ceil(emailsFiltrados.length / ITEMS_PER_PAGE));
+    }
+
+    const limparFiltros = () => {
+        setFilters({});
+        setCurrentPage(1);
+        setIsFiltering(false);
+        if (allEmails) {
+            setTodosEmails(allEmails);
+            setTotalDocs(allEmails.length);
+            setTotalPages(Math.ceil(allEmails.length / ITEMS_PER_PAGE));
+        }
     }
 
     return (
@@ -145,6 +194,96 @@ export default function TodosEmailsPage() {
                     <img className="h-[24px] w-[24px]" src="/recents-purple.png" draggable='false' />
                     <h1 className="font-bold text-2xl">Emails</h1>
                 </div>
+
+                {/* Seção de Filtros */}
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <h2 className="font-semibold text-lg mb-4">Filtros</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {/* Status */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <select
+                                value={filters.status || ''}
+                                onChange={(e) => setFilters({ ...filters, status: e.target.value || undefined })}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                                <option value="">Todos</option>
+                                <option value="sent">Enviado</option>
+                                <option value="failed">Falha</option>
+                                <option value="pending">Pendente</option>
+                            </select>
+                        </div>
+
+                        {/* Remetente */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Remetente</label>
+                            <input
+                                type="text"
+                                placeholder="Filtrar por remetente"
+                                value={filters.sender || ''}
+                                onChange={(e) => setFilters({ ...filters, sender: e.target.value || undefined })}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                        </div>
+
+                        {/* Destinatário */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Destinatário</label>
+                            <input
+                                type="text"
+                                placeholder="Filtrar por destinatário"
+                                value={filters.to || ''}
+                                onChange={(e) => setFilters({ ...filters, to: e.target.value || undefined })}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                        </div>
+
+                        {/* Data de envio - Até */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Enviado antes</label>
+                            <input
+                                type="date"
+                                value={filters.sentBefore || ''}
+                                onChange={(e) => setFilters({ ...filters, sentBefore: e.target.value || undefined })}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                        </div>
+
+                        {/* Data de envio - De */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Enviado após</label>
+                            <input
+                                type="date"
+                                value={filters.sentAfter || ''}
+                                onChange={(e) => setFilters({ ...filters, sentAfter: e.target.value || undefined })}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Botões de Ação */}
+                    <div className="flex gap-2 mt-4">
+                        <button
+                            onClick={aplicarFiltros}
+                            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 font-medium"
+                        >
+                            Aplicar Filtros
+                        </button>
+                        <button
+                            onClick={limparFiltros}
+                            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 font-medium"
+                        >
+                            Limpar
+                        </button>
+                        {isFiltering && (
+                            <span className="text-sm text-gray-600 self-center ml-2">
+                                ✓ Filtros aplicados
+                            </span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Tabela */}
                 <Table>
                     <TableHeader>
                         <TableRow>
