@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailsender-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: mailsender-frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        io.kompose.service: mailsender-frontend
+    spec:
+      restartPolicy: Always
+      
+      securityContext:
+        fsGroup: 1001
+      
+      containers:
+        - name: mailsender-frontend
+          # Ajustar para sua imagem no Docker Hub quando fizer o push
+          # docker build --build-arg NEXT_PUBLIC_API_URI=https://api-mailsender.app.fslab.dev/api -t <seu-usuario>/mailsender-frontend:latest .
+          # docker push <seu-usuario>/mailsender-frontend:latest
+          image: ruanlopes1350/mailsender-frontend:latest
+          imagePullPolicy: Always
+          
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          
+          envFrom:
+            - configMapRef:
+                name: mailsender-frontend-env
+          
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+          # Liveness Probe - verifica se o container está vivo
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          
+          # Readiness Probe - verifica se o container está pronto para receber tráfego
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+            successThreshold: 1
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsUser: 1001
+            runAsGroup: 1001
+            capabilities:
+              drop:
+                - ALL
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: mailsender-frontend
+  name: mailsender-frontend
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+    protocol: TCP
+  selector:
+    io.kompose.service: mailsender-frontend

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mailsender-frontend-env
+  labels:
+    io.kompose.service: mailsender-frontend
+
+data:
+  # Environment
+  NODE_ENV: "production"
+  
+  # API URL
+  # Client-side (chamadas do navegador - URL pública)
+  NEXT_PUBLIC_API_URI: "https://<YOUR_API_DOMAIN>/api"
+  
+  # Next.js
+  NEXT_TELEMETRY_DISABLED: "1"
+  
+  # Port
+  PORT: "3000"
+  HOSTNAME: "0.0.0.0"
