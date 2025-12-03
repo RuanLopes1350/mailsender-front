@@ -1,97 +1,104 @@
-# Deploy Frontend - Mail Sender
+# Deploy do Mailsender Frontend no Kubernetes
+
+Este guia explica como fazer o deploy do frontend do Mailsender no Kubernetes.
 
 ## Pré-requisitos
 
-- Cluster Kubernetes configurado
-- `kubectl` instalado e configurado
-- Docker instalado (para build da imagem)
-- Backend do mailsender já deployado
-- Conta no Docker Hub (ou outro registry)
+- Acesso ao cluster Kubernetes configurado
+- kubectl instalado e configurado
+- Docker instalado para build das imagens
+- Conta no Docker Hub (ruanlopes1350)
+- Backend já deployado e funcionando
 
-## 1. Build e Push da Imagem
+## Estrutura dos Arquivos
+
+- `frontend-configmap.example.yaml` - Template de configuração (copiar e editar)
+- `deploy-frontend.yaml` - Deploy do frontend Next.js
+
+## Passo a Passo
+
+### 1. Preparar ConfigMap
 
 ```bash
-cd /Users/ruanlopes/Documents/mailsender/frontend
+# Copiar o template
+cp frontend-configmap.example.yaml frontend-configmap.yaml
 
-# Build da imagem com a URL da API
-# ⚠️ IMPORTANTE: A URL da API deve ser a URL PÚBLICA acessível pelo navegador do usuário
-docker build \
-  --build-arg NEXT_PUBLIC_API_URI=https://api-mailsender.app.fslab.dev/api \
-  -t ruanlopes1350/mailsender-frontend:latest .
+# Editar e substituir os placeholders:
+# - <YOUR_API_DOMAIN> - URL pública da API (ex: https://api-mailsender.instituicao.edu.br)
+# - <YOUR_FRONTEND_DOMAIN> - URL pública do frontend (ex: https://mailsender.instituicao.edu.br)
+# - <REPLACE_WITH_SECURE_VALUE> - Secret do NextAuth
+```
 
-# Push para o Docker Hub
+**Gerar secret do NextAuth:**
+```bash
+openssl rand -base64 48
+```
+
+### 2. Build e Push da Imagem Docker
+
+```bash
+# Build da imagem
+docker build -t ruanlopes1350/mailsender-frontend:latest \
+  --build-arg NEXT_PUBLIC_API_URI=https://<YOUR_API_DOMAIN>/api \
+  -f Dockerfile .
+
+# Login no Docker Hub (se necessário)
+docker login
+
+# Push da imagem
 docker push ruanlopes1350/mailsender-frontend:latest
 ```
 
-**Nota**: Ajuste o nome da imagem (`ruanlopes1350`) para o seu usuário do Docker Hub.
+**Importante**: Substitua `<YOUR_API_DOMAIN>` pela URL real da sua API durante o build.
 
-### ⚠️ Importante sobre NEXT_PUBLIC_API_URI
-
-A variável `NEXT_PUBLIC_API_URI` é **build-time** no Next.js. Isso significa:
-
-- ✅ Deve ser definida no `docker build` com `--build-arg`
-- ✅ Deve ser a URL PÚBLICA da API (acessível pelo navegador)
-- ❌ NÃO usar URL interna do Kubernetes (como `http://mailsender-backend`)
-- ❌ NÃO pode ser alterada depois do build
-
-**Exemplos corretos:**
-```bash
-# Produção
---build-arg NEXT_PUBLIC_API_URI=https://api-mailsender.seudominio.com/api
-
-# Desenvolvimento com port-forward
---build-arg NEXT_PUBLIC_API_URI=http://localhost:5016/api
-```
-
-## 2. Configurar Variáveis de Ambiente
-
-Edite o arquivo `frontend-configmap.yaml` e ajuste:
-
-```yaml
-# URL pública da API (deve ser acessível pelo navegador do usuário)
-NEXT_PUBLIC_API_URI: "https://api-mailsender.app.fslab.dev/api"
-```
-
-## 3. Deploy no Kubernetes
+### 3. Deploy no Kubernetes
 
 ```bash
-cd /Users/ruanlopes/Documents/mailsender/frontend/deploy
-
-# 1. Frontend ConfigMap
+# Aplicar ConfigMap (com suas configurações)
 kubectl apply -f frontend-configmap.yaml
 
-# 2. Frontend Deployment
+# Deploy do frontend
 kubectl apply -f deploy-frontend.yaml
 ```
 
-## 4. Verificar Status
+### 4. Verificar o Deploy
 
 ```bash
-# Verificar pods
-kubectl get pods | grep mailsender-frontend
+# Ver todos os recursos
+kubectl get all -l app=mailsender-frontend
 
-# Logs do frontend
+# Ou ver pod específico
+kubectl get pods -l app=mailsender-frontend
+
+# Ver logs
 kubectl logs -f deployment/mailsender-frontend
 
-# Status detalhado
-kubectl describe deployment mailsender-frontend
+# Verificar se o pod está rodando
+kubectl get pods -l app=mailsender-frontend
 
-# Testar dentro do cluster
-kubectl run -it --rm debug --image=curlimages/curl --restart=Never -- \
-  curl http://mailsender-frontend/
+# Descrever o pod (para troubleshooting)
+kubectl describe pod -l app=mailsender-frontend
 ```
 
-## 5. Expor o Frontend
+### 5. Acessar o Serviço
 
-### Port Forward (desenvolvimento/teste)
+O serviço é exposto internamente no cluster como `mailsender` na porta 80.
+
+Para acesso externo, configure um Ingress ou use port-forward para testes:
+
 ```bash
-kubectl port-forward service/mailsender-frontend 3000:80
-# Acesse: http://localhost:3000
+# Port forward para teste local
+kubectl port-forward service/mailsender 3000:80
+
+# Acessar no navegador
+# http://localhost:3000
 ```
 
-### Ingress (produção)
+## Configurar Ingress (Acesso Externo)
 
-Crie um arquivo `ingress.yaml`:
+O nome do serviço no cluster é `mailsender`. Configure seu Ingress de acordo com as regras da instituição.
+
+Exemplo de configuração Ingress (adapte conforme necessário):
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -99,228 +106,198 @@ kind: Ingress
 metadata:
   name: mailsender-ingress
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # Adicione annotations necessárias para seu cluster
 spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - mailsender.app.fslab.dev
-        - api-mailsender.app.fslab.dev
-      secretName: mailsender-tls
   rules:
-    # Frontend
-    - host: mailsender.app.fslab.dev
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: mailsender-frontend
-                port:
-                  number: 80
-    
-    # Backend API
-    - host: api-mailsender.app.fslab.dev
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: mailsender-backend
-                port:
-                  number: 80
+  - host: mailsender.instituicao.edu.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mailsender
+            port:
+              number: 80
+  # Configure TLS se necessário
+  tls:
+  - hosts:
+    - mailsender.instituicao.edu.br
+    secretName: mailsender-tls
 ```
 
-Aplique:
-```bash
-kubectl apply -f ingress.yaml
-```
+## Atualizar Deploy
 
-## 6. Atualizar a Aplicação
+### Atualização do Código
 
-### Alterações no Código (sem mudança na API URL)
+Quando fizer alterações no código:
 
 ```bash
-# 1. Build da nova versão com a mesma URL da API
-docker build \
-  --build-arg NEXT_PUBLIC_API_URI=https://api-mailsender.app.fslab.dev/api \
-  -t ruanlopes1350/mailsender-frontend:latest .
+# 1. Build nova imagem
+cd /home/ruanlopes/Documents/mailsender/frontend
+docker build -t ruanlopes1350/mailsender-frontend:latest \
+  --build-arg NEXT_PUBLIC_API_URI=https://mailsender-backend.app.fslab.dev/api \
+  -f Dockerfile .
 
+# 2. Push para Docker Hub
 docker push ruanlopes1350/mailsender-frontend:latest
 
-# 2. Forçar atualização
+# 3. Forçar atualização no Kubernetes (rollout)
 kubectl rollout restart deployment/mailsender-frontend
 
-# 3. Acompanhar o rollout
+# 4. Acompanhar o rollout
 kubectl rollout status deployment/mailsender-frontend
 ```
 
-### Alteração da URL da API
+### Atualização do ConfigMap
 
-Se você mudar o domínio da API, precisará:
+Quando alterar configurações no ConfigMap:
 
 ```bash
-# 1. Atualizar o ConfigMap
-kubectl edit configmap mailsender-frontend-env
-# Ou editar frontend-configmap.yaml e aplicar:
+# 1. Editar o arquivo
+vim frontend-configmap.yaml
+
+# 2. Aplicar as mudanças
 kubectl apply -f frontend-configmap.yaml
 
-# 2. Rebuild com a nova URL
-docker build \
-  --build-arg NEXT_PUBLIC_API_URI=https://nova-api-url.com/api \
-  -t ruanlopes1350/mailsender-frontend:latest .
-
-docker push ruanlopes1350/mailsender-frontend:latest
-
-# 3. Restart do deployment
+# 3. Reiniciar o deployment para carregar as novas configurações
 kubectl rollout restart deployment/mailsender-frontend
+
+# 4. Verificar se aplicou corretamente
+kubectl rollout status deployment/mailsender-frontend
 ```
 
-## 7. Remover Deploy
+### Atualização Rápida (Somente Rollout)
+
+Se a imagem no Docker Hub já foi atualizada e você só quer forçar o pull:
+
+```bash
+kubectl rollout restart deployment/mailsender-frontend
+kubectl rollout status deployment/mailsender-frontend
+```
+
+## Troubleshooting
+
+### Pod não inicia
+
+```bash
+# Ver eventos do pod
+kubectl describe pod -l app=mailsender-frontend
+
+# Ver logs
+kubectl logs -f deployment/mailsender-frontend
+
+# Ver logs do container anterior (se reiniciou)
+kubectl logs deployment/mailsender-frontend --previous
+```
+
+### Verificar ConfigMap
+
+```bash
+# Ver ConfigMap completo
+kubectl get configmap mailsender-frontend-env -o yaml
+
+# Ver apenas os dados
+kubectl get configmap mailsender-frontend-env -o jsonpath='{.data}' | jq
+```
+
+### Erro de conexão com API
+
+1. Verifique se o backend está rodando:
+```bash
+kubectl get pods -l app=api-mailsender
+```
+
+2. Teste a conexão do frontend com o backend:
+```bash
+# Verificar se o backend está disponível
+kubectl get svc mailsender-backend
+
+# Entrar no pod do frontend
+kubectl exec -it deployment/mailsender-frontend -- sh
+
+# Dentro do pod, testar:
+curl http://mailsender-backend/api
+curl https://mailsender-backend.app.fslab.dev/api
+```
+
+3. Verifique as variáveis de ambiente:
+```bash
+kubectl exec -it deployment/front-mailsender -- env | grep API
+```
+
+### Erro 500 ou página em branco
+
+```bash
+# Ver logs detalhados
+kubectl logs -f deployment/front-mailsender
+
+# Verificar se o build foi feito corretamente
+kubectl exec -it deployment/front-mailsender -- ls -la /app/.next
+```
+
+## Limpar Recursos
+
+Para remover o frontend:
 
 ```bash
 kubectl delete -f deploy-frontend.yaml
 kubectl delete -f frontend-configmap.yaml
 ```
 
-## Estrutura de Arquivos
-
-```
-frontend/deploy/
-├── README.md                        # Este arquivo
-├── frontend-configmap.example.yaml  # Exemplo de configuração
-├── frontend-configmap.yaml          # Configuração real
-└── deploy-frontend.yaml             # Deployment + Service do frontend
-```
-
-## URLs de Acesso
-
-- **Frontend**: `http://mailsender-frontend:80` (interno ao cluster)
-- **Frontend Público**: `https://mailsender.app.fslab.dev` (após configurar Ingress)
-- **API Pública**: `https://api-mailsender.app.fslab.dev` (configurada no build)
-
-## Recursos Alocados
-
-### Frontend
-- **Requests**: 256Mi RAM, 0.25 CPU
-- **Limits**: 512Mi RAM, 0.5 CPU
-- **Storage**: Não requer (stateless)
-
-## Troubleshooting
-
-### Pod não inicia
-```bash
-kubectl describe pod <pod-name>
-kubectl logs <pod-name>
-```
-
-### Erro "Cannot connect to API"
-
-Verifique se a URL da API no build está correta:
-
-```bash
-# Verificar variáveis de ambiente dentro do pod
-kubectl exec -it deployment/mailsender-frontend -- env | grep NEXT_PUBLIC
-
-# A variável NEXT_PUBLIC_API_URI deve ser a URL PÚBLICA da API
-```
-
-Se a URL estiver errada, você precisa fazer rebuild:
-
-```bash
-docker build \
-  --build-arg NEXT_PUBLIC_API_URI=https://api-mailsender.app.fslab.dev/api \
-  -t ruanlopes1350/mailsender-frontend:latest .
-docker push ruanlopes1350/mailsender-frontend:latest
-kubectl rollout restart deployment/mailsender-frontend
-```
-
-### Erro de CORS
-
-Se você receber erro de CORS, verifique:
-
-1. **Backend está configurado corretamente**:
-```bash
-kubectl logs -f deployment/mailsender-backend
-```
-
-2. **URL da API está correta** (deve incluir `/api`):
-```
-✅ https://api-mailsender.app.fslab.dev/api
-❌ https://api-mailsender.app.fslab.dev
-```
-
-### Frontend carrega mas não conecta à API
-
-1. **Verificar se o backend está rodando**:
-```bash
-kubectl get pods | grep mailsender-backend
-```
-
-2. **Testar a API diretamente**:
-```bash
-curl https://api-mailsender.app.fslab.dev/api
-```
-
-3. **Verificar logs do backend**:
-```bash
-kubectl logs -f deployment/mailsender-backend
-```
-
-## Segurança
-
-- Container roda com usuário não-root (UID 1001)
-- Capabilities DROP ALL aplicadas
-- Security context configurado
-- Sem escrita no root filesystem
-- Health checks configurados
-
-## Deploy Completo (Frontend + Backend)
-
-Para fazer o deploy completo do mailsender:
-
-```bash
-# 1. Backend (na ordem)
-cd /Users/ruanlopes/Documents/mailsender/backend/deploy
-kubectl apply -f deploy-mongodb.yaml
-kubectl apply -f deploy-redis.yaml
-kubectl apply -f backend-configmap.yaml
-kubectl apply -f deploy-backend.yaml
-
-# Aguardar backend estar pronto
-kubectl wait --for=condition=ready pod -l app=mailsender-backend --timeout=120s
-
-# 2. Frontend
-cd /Users/ruanlopes/Documents/mailsender/frontend/deploy
-kubectl apply -f frontend-configmap.yaml
-kubectl apply -f deploy-frontend.yaml
-
-# 3. Ingress (opcional)
-kubectl apply -f ingress.yaml
-```
-
 ## Monitoramento
 
+Ver métricas de recursos:
+
 ```bash
-# Ver todos os recursos do mailsender
-kubectl get all | grep mailsender
-
-# Logs em tempo real
-kubectl logs -f deployment/mailsender-frontend
-kubectl logs -f deployment/mailsender-backend
-
-# Status dos serviços
-kubectl get svc | grep mailsender
+# Uso de CPU e memória
+kubectl top pod -l app=mailsender-frontend
 ```
 
-## Próximos Passos
+## Rollback
 
-1. Configurar Ingress para HTTPS
-2. Configurar certificados SSL com cert-manager
-3. Implementar monitoramento com Prometheus
-4. Configurar CI/CD para deploys automáticos
-5. Configurar backup automático (backend)
-6. Implementar rate limiting no Ingress
+Se precisar desfazer uma atualização:
+
+```bash
+# Ver histórico de rollouts
+kubectl rollout history deployment/mailsender-frontend
+
+# Fazer rollback para a versão anterior
+kubectl rollout undo deployment/mailsender-frontend
+
+# Ou rollback para uma revisão específica
+kubectl rollout undo deployment/mailsender-frontend --to-revision=2
+```
+
+## Notas Importantes
+
+1. **Build-time vs Runtime**: A variável `NEXT_PUBLIC_API_URI` precisa ser definida durante o build da imagem
+2. **NextAuth**: Certifique-se de que `NEXTAUTH_URL` corresponda à URL pública real do frontend
+3. **HTTPS**: Em produção, sempre use HTTPS tanto para API quanto para frontend
+4. **CORS**: Configure o backend para aceitar requisições do domínio do frontend
+5. **Nome do Serviço**: O serviço fica exposto como `mailsender` no cluster
+6. **Recursos**: Os limits de memória/CPU estão configurados - ajuste conforme necessário
+
+## Integração com Backend
+
+Certifique-se de que:
+
+1. O backend está deployado e acessível em `api-mailsender:80` dentro do cluster
+2. O backend tem CORS configurado para aceitar o domínio do frontend
+3. As URLs em `frontend-configmap.yaml` estão corretas:
+   - `NEXT_PUBLIC_API_URI` - URL pública que o navegador usa
+   - `NEXTAUTH_URL` - URL pública do frontend
+
+## Checklist de Deploy
+
+- [ ] Backend deployado e funcionando
+- [ ] ConfigMap criado com URLs corretas
+- [ ] Secret do NextAuth gerado
+- [ ] Imagem Docker construída com a URL da API correta
+- [ ] Imagem enviada para Docker Hub
+- [ ] Deploy aplicado no Kubernetes
+- [ ] Pod rodando sem erros
+- [ ] Ingress configurado (se necessário)
+- [ ] Acesso externo funcionando
+- [ ] Login/autenticação funcionando
+- [ ] Comunicação com API funcionando

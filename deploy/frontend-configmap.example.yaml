@@ -3,19 +3,21 @@ kind: ConfigMap
 metadata:
   name: mailsender-frontend-env
   labels:
-    io.kompose.service: mailsender-frontend
-
+    app: mailsender-frontend
 data:
   # Environment
   NODE_ENV: "production"
   
-  # API URL
-  # Client-side (chamadas do navegador - URL pública)
+  # API URL - comunicação com o backend
+  # Esta é a URL pública da API que o navegador do usuário irá acessar
   NEXT_PUBLIC_API_URI: "https://<YOUR_API_DOMAIN>/api"
   
-  # Next.js
-  NEXT_TELEMETRY_DISABLED: "1"
+  # NextAuth Configuration
+  NEXTAUTH_URL: "https://<YOUR_FRONTEND_DOMAIN>"
+  AUTH_TRUST_HOST: "true"
   
-  # Port
-  PORT: "3000"
-  HOSTNAME: "0.0.0.0"
+  # NextAuth Secret - GERAR EM PRODUÇÃO: openssl rand -base64 48
+  NEXTAUTH_SECRET: "<REPLACE_WITH_SECURE_VALUE>"
+  
+  # Telemetria
+  NEXT_TELEMETRY_DISABLED: "1"
