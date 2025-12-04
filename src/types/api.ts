@@ -93,6 +93,10 @@ export interface SendEmailResponse {
     emailId: string;
 }
 
+export interface DeleteAdminResponse {
+    message: string;
+}
+
 // ==================== AUTH ====================
 
 export interface LoginRequest {

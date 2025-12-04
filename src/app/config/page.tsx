@@ -7,11 +7,12 @@ import { UserPlus, Users, UserX, UserPen } from 'lucide-react'
 import Button from '@/components/button'
 import Modal from '@/components/modal'
 import Input from '@/components/input'
-import { useApproveApiKey, useConfig, useCreateAdminUser, useAllAdmins } from '@/hooks/useData'
+import { useApproveApiKey, useConfig, useCreateAdminUser, useAllAdmins, useDeleteAdminUser } from '@/hooks/useData'
 import { IZodError } from '@/types/interfaces'
-import { ZodError } from 'zod'
+import { set, ZodError } from 'zod'
 import { adminSchema } from '@/validations/admin'
 import { IAdmin } from '@/types/api'
+import { DeleteAdminResponse } from '@/types/api'
 
 export default function ConfigPage() {
     let agora = new Date();
@@ -41,6 +42,7 @@ export default function ConfigPage() {
     const [errorAdmin, setErrorAdmin] = useState<IZodError[] | null>(null);
     const [respostaAdmin, setRespostaAdmin] = useState<{ message: string } | null>(null);
     const createAdminMutation = useCreateAdminUser();
+    const deleteAdminMutation = useDeleteAdminUser();
 
     const allAdmin = useAllAdmins();
 
@@ -82,6 +84,8 @@ export default function ConfigPage() {
             // Limpa os campos após sucesso
             setNovoAdminUsername('');
             setNovoAdminPassword('');
+            // Atualiza a lista de admins após criar um novo
+            allAdmin.refetch();
         } catch (error: any) {
             if (error instanceof ZodError) {
                 const mensagensErro: IZodError[] = error.issues.map(err => {
@@ -96,6 +100,36 @@ export default function ConfigPage() {
         } finally {
             setNovoAdminCarregando(false);
         }
+    }
+
+    const [respostaDeletarAdmin, setRespostaDeletarAdmin] = useState<{ [key: string]: DeleteAdminResponse }>({});
+    const [adminDeletando, setAdminDeletando] = useState<string | null>(null);
+    
+    const deletarAdmin = async (id: string) => {
+        setAdminDeletando(id);
+        try {
+            await deleteAdminMutation.mutateAsync(id);
+            setRespostaDeletarAdmin(prev => ({ ...prev, [id]: { message: 'Admin deletado com sucesso' } }));
+            // Remove o admin da lista após 1.5 segundos
+            setTimeout(() => {
+                setTodosAdmin(prev => prev.filter(admin => admin._id !== id));
+                setRespostaDeletarAdmin(prev => {
+                    const newState = { ...prev };
+                    delete newState[id];
+                    return newState;
+                });
+            }, 1500);
+        } catch (error) {
+            setRespostaDeletarAdmin(prev => ({ ...prev, [id]: { message: 'Erro ao deletar admin' } }));
+            console.error('Erro ao deletar admin:', error);
+        } finally {
+            setAdminDeletando(null);
+        }
+    }
+
+    const listarTodosAdmins = () => {
+        console.log('Listando todos os admins:', todosAdmin);
+        return setTodosAdmin(todosAdmin);
     }
 
     const resetarModalAdmin = () => {
@@ -170,10 +204,8 @@ export default function ConfigPage() {
                                     texto='Listar Admins'
                                     hover=''
                                     margem=''
-                                    onClick={() => setActiveModal('listar')}
+                                    onClick={() => {setActiveModal('listar'); listarTodosAdmins();}}
                                 />
-                                {/* <Button icone={<UserX />} cor='bg-red-600' altura='h-10' largura='w-35' texto='Excluir Admin' hover='' margem='' />
-                                <Button icone={<UserPen />} cor='bg-orange-500' altura='h-10' largura='w-35' texto='Editar Admin' hover='' margem='' /> */}
                             </TableCell>
                         </TableRow>
                         <TableRow className='flex flex-row'>
@@ -224,42 +256,71 @@ export default function ConfigPage() {
                 isOpen={activeModal === 'listar'}
                 onClose={() => setActiveModal(null)}
             >
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Nome</TableHead>
-                            <TableHead>Login</TableHead>
-                            <TableHead>Criado Em</TableHead>
-                            <TableHead>Último Acesso</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell>Ruan Lopes</TableCell>
-                            <TableCell>Shark1350</TableCell>
-                            <TableCell>21/11/2000</TableCell>
-                            <TableCell>{agoraFormatada}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>Ruan Lopes</TableCell>
-                            <TableCell>Shark1350</TableCell>
-                            <TableCell>21/11/2000</TableCell>
-                            <TableCell>{agoraFormatada}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>Ruan Lopes</TableCell>
-                            <TableCell>Shark1350</TableCell>
-                            <TableCell>21/11/2000</TableCell>
-                            <TableCell>{agoraFormatada}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>Ruan Lopes</TableCell>
-                            <TableCell>Shark1350</TableCell>
-                            <TableCell>21/11/2000</TableCell>
-                            <TableCell>{agoraFormatada}</TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
+                <div className="space-y-3">
+                    {todosAdmin.length === 0 ? (
+                        <div className="text-center py-8 text-gray-500">
+                            Nenhum administrador encontrado.
+                        </div>
+                    ) : (
+                        todosAdmin.map((admin) => {
+                            const resposta = respostaDeletarAdmin[admin._id];
+                            const isDeletando = adminDeletando === admin._id;
+                            
+                            return (
+                                <div 
+                                    key={admin._id} 
+                                    className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
+                                        resposta?.message === 'Admin deletado com sucesso' 
+                                            ? 'bg-green-50 border-green-200' 
+                                            : resposta?.message === 'Erro ao deletar admin'
+                                                ? 'bg-red-50 border-red-200'
+                                                : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold">
+                                            {(admin.username || 'A').charAt(0).toUpperCase()}
+                                        </div>
+                                        <span className="font-medium text-gray-800">{admin.username || '—'}</span>
+                                    </div>
+                                    
+                                    {resposta ? (
+                                        <span className={`text-sm font-medium ${
+                                            resposta.message === 'Admin deletado com sucesso' 
+                                                ? 'text-green-600' 
+                                                : 'text-red-600'
+                                        }`}>
+                                            {resposta.message === 'Admin deletado com sucesso' ? '✓ ' : '✗ '}
+                                            {resposta.message}
+                                        </span>
+                                    ) : (
+                                        <div className="flex gap-2">
+                                            <Button 
+                                                icone={<UserPen size={16} />} 
+                                                cor='bg-orange-500' 
+                                                altura='h-9' 
+                                                largura='w-28' 
+                                                texto='Editar' 
+                                                hover='hover:bg-orange-600' 
+                                                margem='' 
+                                            />
+                                            <Button 
+                                                icone={<UserX size={16} />} 
+                                                cor='bg-red-600' 
+                                                altura='h-9' 
+                                                largura='w-28' 
+                                                texto={isDeletando ? 'Excluindo...' : 'Excluir'} 
+                                                hover='hover:bg-red-700' 
+                                                margem='' 
+                                                onClick={() => !isDeletando && deletarAdmin(admin._id)} 
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
             </Modal>
 
             {/* Modal de Novo Admin */}

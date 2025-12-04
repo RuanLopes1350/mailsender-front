@@ -166,3 +166,14 @@ export const useAllAdmins = () => {
         queryFn: api.getAllAdmins,
     });
 }
+
+export const useDeleteAdminUser = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => api.deleteAdminUser(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['allAdmins'] });
+        },
+    });
+}

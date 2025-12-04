@@ -170,3 +170,8 @@ export const getAllAdmins = async (): Promise<any> => {
     const { data } = await apiClient.get<any>('/admin/listar');
     return data;
 }
+
+export const deleteAdminUser = async (id: string): Promise<{ message: string }> => {
+    const { data } = await apiClient.delete<{ message: string }>(`/admin/deletar/${id}`);
+    return data;
+}
