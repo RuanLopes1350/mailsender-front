@@ -24,17 +24,6 @@ export default function LoginPage() {
         // Limpa erros anteriores
         setError(null);
 
-        // Validações básicas
-        // if (!email || !password) {
-        //     setError("Por favor, preencha todos os campos");
-        //     return;
-        // }
-
-        // if (!email.includes("@")) {
-        //     setError("Por favor, insira um email válido");
-        //     return;
-        // }
-
         const loginData = { login: email, senha: password };
 
         try {

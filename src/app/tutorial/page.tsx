@@ -31,19 +31,19 @@ export default function TutorialPage() {
                     <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                         🔐 Autenticação
                     </h2>
-                    
+
                     <div className="space-y-6">
                         <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg">
                             <h3 className="text-xl font-semibold text-yellow-900 mb-3">
                                 ⚠️ API Key Obrigatória
                             </h3>
                             <p className="text-gray-700 mb-4">
-                                Para usar a API e enviar emails, você precisa de uma <strong>API Key</strong>. 
+                                Para usar a API e enviar emails, você precisa de uma <strong>API Key</strong>.
                                 Faça seu cadastro gratuito para gerar sua chave automaticamente.
                             </p>
                             <div className="bg-white p-4 rounded border border-yellow-200">
                                 <p className="text-sm font-mono text-gray-800">
-                                    <strong>Header obrigatório:</strong><br/>
+                                    <strong>Header obrigatório:</strong><br />
                                     <code className="text-indigo-600">x-api-key: "SUA_CHAVE_AQUI"</code>
                                 </p>
                             </div>
@@ -54,7 +54,7 @@ export default function TutorialPage() {
                                 🚀 Como obter sua API Key:
                             </h4>
                             <ol className="list-decimal list-inside space-y-3 text-gray-700 ml-4 mb-4">
-                                <li>Acesse a página de <a href="/cadastro" className="text-indigo-600 hover:text-indigo-800 font-semibold underline">Cadastro</a></li>
+                                <li>Acesse a página de <a href="/cadastro" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800 font-semibold underline">Cadastro</a></li>
                                 <li>Preencha seus dados (nome, email e senha)</li>
                                 <li>Clique em &quot;Cadastrar&quot;</li>
                                 <li>Sua <strong>API Key será gerada e exibida na tela</strong></li>
@@ -84,7 +84,7 @@ export default function TutorialPage() {
                                 🔐 Sobre o Login
                             </h4>
                             <p className="text-gray-700">
-                                A tela de <strong>Login</strong> é reservada exclusivamente para <strong>administradores do sistema</strong>. 
+                                A tela de <strong>Login</strong> é reservada exclusivamente para <strong>administradores do sistema</strong>.
                                 Usuários comuns não precisam fazer login - basta usar sua API Key para enviar emails via API.
                             </p>
                         </div>
@@ -94,7 +94,7 @@ export default function TutorialPage() {
                 {/* Endpoints */}
                 <section className="bg-white rounded-2xl shadow-lg p-8 mb-8">
                     <h2 className="text-3xl font-bold text-gray-900 mb-6">📡 Endpoints Principais</h2>
-                    
+
                     <div className="space-y-4">
                         <div className="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 transition-colors">
                             <div className="flex items-center gap-3 mb-2">
@@ -126,7 +126,7 @@ export default function TutorialPage() {
                         <div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">Exemplo Básico</h3>
                             <div className="bg-gray-50 rounded-lg p-6 relative">
-                                <button 
+                                <button
                                     onClick={() => copyToClipboard(`curl -X POST ${API_URL}/emails/send \\
   -H "Content-Type: application/json" \\
   -H "x-api-key: SUA_CHAVE_AQUI" \\
@@ -164,7 +164,7 @@ export default function TutorialPage() {
                         <div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">Exemplo Completo (Com Botão)</h3>
                             <div className="bg-gray-50 rounded-lg p-6 relative">
-                                <button 
+                                <button
                                     onClick={() => copyToClipboard(`{
   "to": "usuario@exemplo.com",
   "subject": "Bem-vindo ao Sistema!",
@@ -225,6 +225,7 @@ export default function TutorialPage() {
                                         <tr>
                                             <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Campo</th>
                                             <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Tipo</th>
+                                            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Obrigatório</th>
                                             <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Descrição</th>
                                         </tr>
                                     </thead>
@@ -232,60 +233,110 @@ export default function TutorialPage() {
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">nomeSistema</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">Nome do sistema/empresa</td>
-                                        </tr>
-                                        <tr className="hover:bg-gray-50">
-                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">nome</td>
-                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
-                                            <td className="px-4 py-3 text-sm text-gray-600">Nome do destinatário</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">mensagem</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string/HTML</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">Mensagem principal customizada</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">mensagemSecundaria</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string/HTML</td>
-                                            <td className="px-4 py-3 text-sm text-gray-600">Texto adicional</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Texto adicional após a mensagem principal</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">itens</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">array</td>
-                                            <td className="px-4 py-3 text-sm text-gray-600">Lista de benefícios/recursos</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Lista de benefícios/recursos (bullets)</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">mostrarBotao</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">boolean</td>
-                                            <td className="px-4 py-3 text-sm text-gray-600">Exibir ou ocultar botão</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600"><span className="bg-gray-200 rounded-[10px] p-1">true</span> para exibir botão, <span className="bg-gray-200 rounded-[10px] p-1">false</span> para ocultar</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">textoBotao</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string</td>
-                                            <td className="px-4 py-3 text-sm text-gray-600">Texto do botão</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não*</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Texto do botão (padrão: "Começar Agora")</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">urlBotao</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não*</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">URL do botão</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">corPrimaria</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string</td>
-                                            <td className="px-4 py-3 text-sm text-gray-600">Cor do header em hex (ex: &quot;#4F46E5&quot;)</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Cor do header em hex (ex: "#4F46E5")</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">corBotao</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">Cor do botão em hex</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">corDestaque</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Cor para textos em destaque</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">logoUrl</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string</td>
-                                            <td className="px-4 py-3 text-sm text-gray-600">URL do logo da empresa</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">URL do logo (substitui nomeSistema no header)</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">infoAdicional</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string/HTML</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Informações extras antes do footer</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">textoFooter</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string/HTML</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Texto customizado do rodapé</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">mostrarLinks</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">boolean</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Exibir links no footer</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">linkSite</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">URL do site</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">linkSuporte</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">URL do suporte</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">linkPrivacidade</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">URL da política de privacidade</td>
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div className="mt-3 text-sm text-gray-600">
+                                    <p>* Obrigatório se <span className="bg-gray-200 rounded-[10px] px-2 py-1">mostrarBotao</span> for <span className="bg-gray-200 rounded-[10px] px-2 py-1">true</span></p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -303,7 +354,7 @@ export default function TutorialPage() {
                         <div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">Exemplo: Confirmação de Pedido</h3>
                             <div className="bg-gray-50 rounded-lg p-6 relative">
-                                <button 
+                                <button
                                     onClick={() => copyToClipboard(`{
   "to": "cliente@exemplo.com",
   "subject": "Pedido Confirmado #12345",
@@ -361,7 +412,7 @@ export default function TutorialPage() {
                         <div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">Exemplo: Notificação Simples</h3>
                             <div className="bg-gray-50 rounded-lg p-6 relative">
-                                <button 
+                                <button
                                     onClick={() => copyToClipboard(`{
   "to": "usuario@exemplo.com",
   "subject": "Nova Atualização Disponível",
@@ -407,69 +458,204 @@ export default function TutorialPage() {
 
                         {/* Tabela de Campos */}
                         <div>
-                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Principais Campos</h3>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-3">Campos Disponíveis - Template Genérico</h3>
                             <div className="overflow-x-auto">
                                 <table className="min-w-full border border-gray-200 rounded-lg">
                                     <thead className="bg-gray-50">
                                         <tr>
                                             <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Campo</th>
                                             <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Tipo</th>
+                                            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Obrigatório</th>
                                             <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Descrição</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
                                         <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">nomeSistema</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Nome exibido no header</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">mostrarHeader</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">boolean</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Exibir header colorido (padrão: false)</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">logoUrl</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">URL do logo no header</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">titulo</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string</td>
-                                            <td className="px-4 py-3 text-sm text-gray-600">Título principal do email</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Título principal</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">subtitulo</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">Subtítulo abaixo do título</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">nome</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string</td>
-                                            <td className="px-4 py-3 text-sm text-gray-600">Nome para saudação</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Nome para saudação ("Olá, João")</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">mensagem</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string/HTML</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">Conteúdo principal</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">conteudo</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string/HTML</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Conteúdo adicional/alternativo</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">textoDestaque</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string/HTML</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">Texto em caixa destacada</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">itens</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">array</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">Lista de itens (bullets)</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">dados</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">array</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">Tabela de dados [&#123;label, valor&#125;]</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">mostrarBotao</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">boolean</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">Exibir botão principal</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">textoBotao</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não*</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Texto do botão principal</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">urlBotao</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não*</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">URL do botão principal</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">mostrarBotaoSecundario</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">boolean</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">Exibir segundo botão</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">textoBotaoSecundario</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não**</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Texto do botão secundário</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">urlBotaoSecundario</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não**</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">URL do botão secundário</td>
                                         </tr>
                                         <tr className="hover:bg-gray-50">
                                             <td className="px-4 py-3 text-sm font-mono text-indigo-600">nota</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">string/HTML</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
                                             <td className="px-4 py-3 text-sm text-gray-600">Nota/aviso no final</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">infoAdicional</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string/HTML</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Informações extras</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">corPrimaria</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Cor do header em hex</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">corBotao</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Cor do botão em hex</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">corDestaque</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Cor da caixa de destaque</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">mostrarDivisor</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">boolean</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Linha divisória após o título</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">alinharTitulo</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Alinhamento: "left", "center", "right"</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">textoFooter</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string/HTML</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Rodapé customizado</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">enderecoEmpresa</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Endereço físico da empresa</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">mostrarLinks</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">boolean</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Exibir links no footer</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">linkSite</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">URL do site</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">linkSuporte</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">URL do suporte</td>
+                                        </tr>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-4 py-3 text-sm font-mono text-indigo-600">linkPrivacidade</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">string</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">Não</td>
+                                            <td className="px-4 py-3 text-sm text-gray-600">URL da política de privacidade</td>
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div className="mt-3 text-sm text-gray-600">
+                                    <p>* Obrigatório se <span className="bg-gray-200 rounded-[10px] px-2 py-1">mostrarBotao</span> for <span className="bg-gray-200 rounded-[10px] px-2 py-1">true</span></p>
+                                    <p>** Obrigatório se <span className="bg-gray-200 rounded-[10px] px-2 py-1">mostrarBotaoSecundario</span> for <span className="bg-gray-200 rounded-[10px] px-2 py-1">true</span></p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -484,7 +670,7 @@ export default function TutorialPage() {
                         <div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">JavaScript (Fetch API)</h3>
                             <div className="bg-gray-50 rounded-lg p-6 relative">
-                                <button 
+                                <button
                                     onClick={() => copyToClipboard(`async function enviarEmail() {
   const response = await fetch('${API_URL}/emails/send', {
     method: 'POST',
@@ -546,7 +732,7 @@ export default function TutorialPage() {
                         <div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-3">Python (Requests)</h3>
                             <div className="bg-gray-50 rounded-lg p-6 relative">
-                                <button 
+                                <button
                                     onClick={() => copyToClipboard(`import requests
 
 def enviar_email():
@@ -639,9 +825,9 @@ enviar_email()`}</code>
                             <h3 className="text-lg font-semibold text-yellow-900 mb-2">Erro - Dados Inválidos (500)</h3>
                             <pre className="text-sm bg-white p-3 rounded border border-yellow-200 overflow-x-auto">
                                 <code className="text-gray-800">{`{
-  "message": "Falha ao enviar e-mail",
-  "error": "Template não encontrado"
-}`}</code>
+                                    "message": "Falha ao enviar e-mail",
+                                    "error": "Template não encontrado"}`}
+                                </code>
                             </pre>
                         </div>
                     </div>

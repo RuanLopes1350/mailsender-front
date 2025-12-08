@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Mail Sender",
   description: "Microserviço de envio de e-mails",
   keywords: ["email", "microservice", "node.js", "typescript", "next.js"],
-  authors: [{ name: "Ruan Lopes", url: "https://ruanlopes.is-a.dev" }]
+  authors: [{ name: "Ruan Lopes", url: "https://github.com/RuanLopes1350" }]
 };
 
 export default function RootLayout({
