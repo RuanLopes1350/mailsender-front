@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import AuthPanel from "@/components/auth-panel";
 import Button from "@/components/button";
 import Input from "@/components/input";
@@ -64,7 +65,13 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-[calc(100vh-200px)] flex flex-col items-center justify-center p-2 sm:p-4 md:p-8 gap-3 sm:gap-4 md:gap-6 py-4 sm:py-6 md:py-8">
+        <div className="min-h-[calc(100vh-200px)] flex flex-col items-center justify-center p-2 sm:p-4 md:p-8 gap-3 sm:gap-4 md:gap-6 py-4 sm:py-6 md:py-8 relative">
+            <Link 
+                href="/tutorial"
+                className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm sm:text-base"
+            >
+                Tutorial
+            </Link>
             <div className="w-full max-w-md px-2 sm:px-0">
                 <div className="flex flex-col items-center gap-1 sm:gap-2">
                     <img src="/logo-purple.png" className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-contain" alt="Logo Mail Sender" draggable='false' />

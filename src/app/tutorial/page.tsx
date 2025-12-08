@@ -1,5 +1,8 @@
 'use client';
 
+import { MoveLeft } from "lucide-react";
+import Link from "next/link";
+
 export default function TutorialPage() {
     const API_URL = process.env.NEXT_PUBLIC_API_URI || 'http://localhost:5016/api';
 
@@ -11,6 +14,15 @@ export default function TutorialPage() {
     return (
         <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 px-4">
             <div className="max-w-5xl mx-auto">
+                <div className="mb-8">
+                    <Link
+                        href="/"
+                        className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-md hover:shadow-lg"
+                    >
+                        <MoveLeft size={20} />
+                        Retornar
+                    </Link>
+                </div>
                 {/* Header */}
                 <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border-t-4 border-indigo-600">
                     <h1 className="text-4xl font-bold text-gray-900 mb-4">
