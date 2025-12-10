@@ -111,10 +111,11 @@ export const useRecentEmails = (limit: number = 10) => {
     });
 };
 
-export const useMyEmails = () => {
+export const useMyEmails = (apiKey: string, enabled: boolean = false) => {
     return useQuery({
-        queryKey: ['myEmails'],
-        queryFn: api.getMyEmails,
+        queryKey: ['myEmails', apiKey],
+        queryFn: () => api.getMyEmails(apiKey),
+        enabled: enabled && !!apiKey, // Só busca se enabled for true e apiKey existir
     });
 };
 
@@ -139,6 +140,14 @@ export const useEmailDetails = (emailId: string, enabled: boolean = false) => {
         enabled: enabled && !!emailId, // Só busca se enabled for true e emailId existir
     });
 }
+
+export const useEmailDetailsWithApiKey = (emailId: string, apiKey: string, enabled: boolean = false) => {
+    return useQuery({
+        queryKey: ['emailDetailsWithApiKey', emailId, apiKey],
+        queryFn: () => api.getEmailDetailsWithApiKey(emailId, apiKey),
+        enabled: enabled && !!emailId && !!apiKey,
+    });
+};
 
 export const useAllEmails = () => {
     return useQuery({

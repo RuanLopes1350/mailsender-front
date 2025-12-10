@@ -130,13 +130,18 @@ export const getRecentEmails = async (limit: number = 10): Promise<Email[]> => {
     return data;
 };
 
-export const getMyEmails = async (): Promise<Email[]> => {
-    const { data } = await apiClient.get<Email[]>('/emails/meus');
+export const getMyEmails = async (apiKey: string): Promise<Email[]> => {
+    const { data } = await apiClient.post<Email[]>('/emails/meus', { apiKey });
     return data;
 };
 
 export const getEmailDetails = async (emailId: string): Promise<EmailDetails> => {
     const { data } = await apiClient.get<EmailDetails>(`/emails/detalhes/${emailId}`);
+    return data;
+};
+
+export const getEmailDetailsWithApiKey = async (emailId: string, apiKey: string): Promise<EmailDetails> => {
+    const { data } = await apiClient.post<EmailDetails>(`/emails/detalhes/${emailId}`, { apiKey });
     return data;
 };
 
