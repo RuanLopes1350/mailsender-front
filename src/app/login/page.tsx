@@ -39,7 +39,7 @@ export default function LoginPage() {
             console.log("Login realizado com sucesso!");
 
             // Redireciona para a página principal
-            router.push("/");
+            router.push("/painel");
         } catch (error: any) {
             if (error instanceof ZodError) {
                 const mensagensErro: IZodError[] = error.issues.map(err => {

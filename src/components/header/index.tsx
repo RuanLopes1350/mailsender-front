@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function Header() {
     const pathname = usePathname();
-    const ignore = ['/login', '/cadastro', '/meus_emails'];
+    const ignore = ['/', '/login', '/cadastro', '/meus_emails'];
     const { logout } = useAuth()
     const handleLogOut = async () => {
         console.log('Saindo...')
