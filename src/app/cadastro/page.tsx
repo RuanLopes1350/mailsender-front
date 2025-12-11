@@ -68,7 +68,7 @@ export default function CadastroPage() {
 
     return (
         <div className="min-h-[calc(100vh-200px)] flex flex-col items-center justify-center p-2 sm:p-4 md:p-8 gap-3 sm:gap-4 md:gap-6 py-4 sm:py-6 md:py-8">
-            <Link 
+            <Link
                 href="/tutorial"
                 className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm sm:text-base"
             >

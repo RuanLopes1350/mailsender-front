@@ -66,7 +66,7 @@ export default function TutorialPage() {
                                 🚀 Como obter sua API Key:
                             </h4>
                             <ol className="list-decimal list-inside space-y-3 text-gray-700 ml-4 mb-4">
-                                <li>Acesse a página de <a href="/cadastro" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800 font-semibold underline">Cadastro</a></li>
+                                <li>Acesse a página de <Link href="/cadastro" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-800 font-semibold underline">Cadastro</Link></li>
                                 <li>Preencha seus dados (nome, email e senha)</li>
                                 <li>Clique em &quot;Cadastrar&quot;</li>
                                 <li>Sua <strong>API Key será gerada e exibida na tela</strong></li>
@@ -81,13 +81,16 @@ export default function TutorialPage() {
 
                         <div className="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-lg">
                             <h4 className="text-lg font-semibold text-amber-900 mb-3">
-                                🚧 Consultar Histórico (Em Construção)
+                                📖 Consultar Histórico
                             </h4>
                             <p className="text-gray-700 mb-3">
-                                Em breve, você poderá consultar todos os emails que enviou usando sua API Key através de uma nova tela dedicada.
+                                Acesse a página <strong><Link target="_blank" rel="noopener noreferrer" href="/meus_emails" className="text-indigo-600 hover:text-indigo-800 font-semibold underline">Histórico de Emails</Link></strong> para ver os emails enviados com sua API Key.
                             </p>
                             <p className="text-sm text-gray-600 italic">
-                                Esta funcionalidade está em desenvolvimento e será liberada em breve.
+                                Informe sua API Key e clique em &quot;Buscar&quot; para visualizar os envios realizados. 
+                            </p>
+                            <p className="text-sm text-gray-600 italic">
+                                Todos os emails enviados via API com sua chave estarão listados lá.
                             </p>
                         </div>
 
