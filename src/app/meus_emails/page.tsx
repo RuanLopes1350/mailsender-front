@@ -202,9 +202,11 @@ export default function MeusEmailsPage() {
                 )}
             </Modal>
 
-            <div className="bg-white rounded-2xl border p-4 md:p-10 mx-4 md:mx-17 overflow-x-auto">
-                <div className="mb-2">
-                    <Button cor="bg-[#4f39f6]" altura="" largura="" texto="Voltar" onClick={() => {limparApiKey()}}/>
+            <div className="bg-white rounded-2xl border p-4 mt-20 md:p-10 mx-4 md:mx-17 overflow-x-auto">
+                <div>
+                    <Link href="/" className="text-blue-600 hover:underline mb-4 inline-block">
+                        &larr; Retornar
+                    </Link>
                 </div>
                 <div className="flex flex-row items-center gap-2">
                     <img className="h-6 w-6" src="/recents-purple.png" draggable='false' />
@@ -240,6 +242,9 @@ export default function MeusEmailsPage() {
                 {hasSearched && !isLoading && (
                     <>
                         {/* Seção de Filtros */}
+                        <div className="mb-2">
+                            <Button cor="bg-[#4f39f6]" altura="h-[42px] sm:h-[48px]" largura="sm:w-auto w-full" texto="Limpar" onClick={() => { limparApiKey() }} />
+                        </div>
                         <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                             <h2 className="font-semibold text-lg mb-4">Filtros</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
