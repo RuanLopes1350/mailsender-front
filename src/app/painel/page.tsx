@@ -16,6 +16,7 @@ import { apiKeySchema } from "@/validations/apiKey";
 import { useGenerateApiKey } from "@/hooks/useData"
 import { ApiKey, GenerateApiKeyResponse } from "@/types/api";
 import { generatePdf } from "@/utils/generatePdf";
+import axios from "axios";
 
 
 export default function Home() {
@@ -26,6 +27,41 @@ export default function Home() {
   const [botaoLink2, setBotaoLink2] = useState<boolean>(false);
   const [templateAtivo, setTemplateAtivo] = useState<string>('')
   const [chaveParaExcluir, setChaveParaExcluir] = useState<ApiKey | null>(null);
+
+  // ========== ESTADOS PARA ENVIO DE EMAIL ==========
+  // Campos básicos
+  const [emailApiKey, setEmailApiKey] = useState('');
+  const [emailDestinatario, setEmailDestinatario] = useState('');
+  const [emailAssunto, setEmailAssunto] = useState('');
+  
+  // Campos do template Bem-vindo
+  const [nomeSistema, setNomeSistema] = useState('');
+  const [nomeDestinatario, setNomeDestinatario] = useState('');
+  const [mensagemPrincipal, setMensagemPrincipal] = useState('');
+  const [mensagemSecundaria, setMensagemSecundaria] = useState('');
+  const [listaRecursos, setListaRecursos] = useState('');
+  const [textoBotao, setTextoBotao] = useState('Começar Agora');
+  const [urlBotao, setUrlBotao] = useState('');
+  const [infoAdicional, setInfoAdicional] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
+  const [corHeader, setCorHeader] = useState('#4F46E5');
+  const [corBotao, setCorBotao] = useState('#4F46E5');
+  const [corDestaque, setCorDestaque] = useState('#4F46E5');
+  const [linkSite, setLinkSite] = useState('');
+  const [linkSuporte, setLinkSuporte] = useState('');
+  const [linkPrivacidade, setLinkPrivacidade] = useState('');
+  
+  // Campos extras do template Genérico
+  const [conteudoAdicional, setConteudoAdicional] = useState('');
+  const [textoDestaque, setTextoDestaque] = useState('');
+  const [tabelaDados, setTabelaDados] = useState('');
+  const [textoBotao2, setTextoBotao2] = useState('');
+  const [urlBotao2, setUrlBotao2] = useState('');
+  
+  // Estado de envio
+  const [enviandoEmail, setEnviandoEmail] = useState(false);
+  const [erroEnvio, setErroEnvio] = useState<string | null>(null);
+  const [sucessoEnvio, setSucessoEnvio] = useState<string | null>(null);
 
   // Busca dados da API
   const { data: stats, isLoading: loadingStats, error: errorStats } = useGeneralStats();
@@ -133,6 +169,125 @@ export default function Home() {
     setEmailId('');
     setActiveModal(null);
   }
+
+  // ========== FUNÇÃO PARA ENVIAR EMAIL ==========
+  const enviarEmail = async () => {
+    // Limpa mensagens anteriores
+    setErroEnvio(null);
+    setSucessoEnvio(null);
+    
+    // Validações básicas
+    if (!emailApiKey) {
+      setErroEnvio('API Key é obrigatória');
+      return;
+    }
+    if (!emailDestinatario) {
+      setErroEnvio('Destinatário é obrigatório');
+      return;
+    }
+    if (!emailAssunto) {
+      setErroEnvio('Assunto é obrigatório');
+      return;
+    }
+    if (!templateAtivo) {
+      setErroEnvio('Selecione um template');
+      return;
+    }
+
+    setEnviandoEmail(true);
+
+    try {
+      // Monta o objeto data baseado no template selecionado
+      let data: any = {};
+
+      if (templateAtivo === 'bemvindo') {
+        data = {
+          nomeSistema: nomeSistema || undefined,
+          nome: nomeDestinatario || undefined,
+          mensagem: mensagemPrincipal || undefined,
+          mensagemSecundaria: mensagemSecundaria || undefined,
+          itens: listaRecursos ? listaRecursos.split(',').map(item => item.trim()) : undefined,
+          mostrarBotao: botaoLink,
+          textoBotao: textoBotao || 'Começar Agora',
+          urlBotao: urlBotao || undefined,
+          infoAdicional: infoAdicional || undefined,
+          logoUrl: logoUrl || undefined,
+          corPrimaria: corHeader || '#4F46E5',
+          corBotao: corBotao || '#4F46E5',
+          corDestaque: corDestaque || '#4F46E5',
+          linkSite: footerLinks ? linkSite : undefined,
+          linkSuporte: footerLinks ? linkSuporte : undefined,
+          linkPrivacidade: footerLinks ? linkPrivacidade : undefined,
+        };
+      } else if (templateAtivo === 'generico') {
+        data = {
+          nomeSistema: nomeSistema || undefined,
+          nome: nomeDestinatario || undefined,
+          mensagem: mensagemPrincipal || undefined,
+          conteudo: conteudoAdicional || undefined,
+          textoDestaque: textoDestaque || undefined,
+          itens: listaRecursos ? listaRecursos.split(',').map(item => item.trim()) : undefined,
+          // Tabela de dados: "Label: Valor, Label2: Valor2" => [{label: "Label", valor: "Valor"}, ...]
+          dados: tabelaDados ? tabelaDados.split(',').map(item => {
+            const partes = item.split(':');
+            return { label: partes[0]?.trim(), valor: partes[1]?.trim() };
+          }) : undefined,
+          mostrarBotao: botaoLink,
+          textoBotao: textoBotao || 'Começar Agora',
+          urlBotao: urlBotao || undefined,
+          mostrarBotaoSecundario: botaoLink2,
+          textoBotaoSecundario: textoBotao2 || undefined,
+          urlBotaoSecundario: urlBotao2 || undefined,
+          infoAdicional: infoAdicional || undefined,
+          logoUrl: logoUrl || undefined,
+          corPrimaria: corHeader || '#4F46E5',
+          corBotao: corBotao || '#4F46E5',
+          corDestaque: corDestaque || '#4F46E5',
+          mostrarHeader: true,
+          linkSite: footerLinks ? linkSite : undefined,
+          linkSuporte: footerLinks ? linkSuporte : undefined,
+          linkPrivacidade: footerLinks ? linkPrivacidade : undefined,
+        };
+      }
+
+      // Remove campos undefined do objeto data
+      Object.keys(data).forEach(key => {
+        if (data[key] === undefined) {
+          delete data[key];
+        }
+      });
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URI || 'http://localhost:5016/api';
+
+      // Faz a requisição para enviar o email
+      const response = await axios.post<{ emailId: string; message: string; status: string }>(
+        `${apiUrl}/emails/send`,
+        {
+          to: emailDestinatario,
+          subject: emailAssunto,
+          template: templateAtivo,
+          data: data
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': emailApiKey
+          }
+        }
+      );
+
+      console.log('Email enviado:', response.data);
+      setSucessoEnvio(`Email enviado com sucesso! ID: ${response.data.emailId}`);
+      
+    } catch (error: any) {
+      console.error('Erro ao enviar email:', error);
+      // Pega a mensagem de erro da resposta da API
+      const mensagemErro = error.response?.data?.message || error.message || 'Erro ao enviar email';
+      setErroEnvio(mensagemErro);
+    } finally {
+      setEnviandoEmail(false);
+    }
+  };
 
   // Debug
   console.log('Stats:', stats);
@@ -403,14 +558,28 @@ export default function Home() {
               <img className="h-[24px] w-[24px]" src="/email-purple.png" draggable='false' />
               <h1 className="font-bold text-xl md:text-2xl">Testar Envio de Email</h1>
             </div>
+            
+            {/* Mensagens de erro/sucesso */}
+            {erroEnvio && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mt-4">
+                {erroEnvio}
+              </div>
+            )}
+            {sucessoEnvio && (
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mt-4">
+                {sucessoEnvio}
+              </div>
+            )}
+            
             <div className="flex flex-col gap-6">
-              <div className="bg-[#F9FAFB] rounded-2xl p-6">
+              <div className="bg-[#F9FAFB] rounded-2xl p-6 mt-4">
                 <h2 className="font-bold text-black text-[18px]">Configurações Básicas</h2>
-                <Input className="bg-white" id="apiKey" type="text" label="API Key *" altura="" largura="" placeholder="Digite sua API Key" />
-                <Input className="bg-white" id="destinatario" type="email" label="Para (email) *" altura="" largura="" placeholder="destinatario@example.com" />
-                <Input className="bg-white" id="assunto" type="text" label="Assunto *" altura="" largura="" placeholder="Assunto do E-mail" />
+                <Input className="bg-white" id="apiKey" type="text" label="API Key *" altura="" largura="" placeholder="Digite sua API Key" value={emailApiKey} onChange={(e) => setEmailApiKey(e.target.value)} />
+                <Input className="bg-white" id="destinatario" type="email" label="Para (email) *" altura="" largura="" placeholder="destinatario@example.com" value={emailDestinatario} onChange={(e) => setEmailDestinatario(e.target.value)} />
+                <Input className="bg-white" id="assunto" type="text" label="Assunto *" altura="" largura="" placeholder="Assunto do E-mail" value={emailAssunto} onChange={(e) => setEmailAssunto(e.target.value)} />
                 <div className="bg-white flex flex-col mt-4 mb-4 gap-2">
-                  <select onChange={(e) => { setTemplateAtivo(e.target.value) }} defaultValue="" className="p-4 rounded-[10px] border">
+                  <label className="text-sm font-medium text-gray-700">Template *</label>
+                  <select onChange={(e) => { setTemplateAtivo(e.target.value) }} value={templateAtivo} className="p-4 rounded-[10px] border">
                     <option value="" disabled>Selecione um template</option>
                     <option value="bemvindo">Bem-Vindo</option>
                     <option value="generico">Genérico</option>
@@ -430,23 +599,23 @@ export default function Home() {
                     <div className="flex flex-col gap-4 mt-4">
                       <div className="flex flex-col md:flex-row gap-6 w-full">
                         <div className="flex-1">
-                          <Input className="bg-white" id="nomeSistema" type="text" label="Nome do Sistema" altura="" largura="w-full" placeholder="Ex: Meu Sistema" />
+                          <Input className="bg-white" id="nomeSistema" type="text" label="Nome do Sistema" altura="" largura="w-full" placeholder="Ex: Meu Sistema" value={nomeSistema} onChange={(e) => setNomeSistema(e.target.value)} />
                         </div>
                         <div className="flex-1">
-                          <Input className="bg-white" id="nomeDestinatario" type="text" label="Nome do Destinatário" altura="" largura="w-full" placeholder="Ex: João Silva" />
+                          <Input className="bg-white" id="nomeDestinatario" type="text" label="Nome do Destinatário" altura="" largura="w-full" placeholder="Ex: João Silva" value={nomeDestinatario} onChange={(e) => setNomeDestinatario(e.target.value)} />
                         </div>
                       </div>
                       <div className="flex flex-col">
                         <label htmlFor="mensagemPrincipal">Mensagem Principal</label>
-                        <textarea id="mensagemPrincipal" className="bg-white w-full h-32 mt-4 p-4 border rounded-md resize-none" placeholder="Mensagem de Boas-Vindas personalizada"></textarea>
+                        <textarea id="mensagemPrincipal" className="bg-white w-full h-32 mt-4 p-4 border rounded-md resize-none" placeholder="Mensagem de Boas-Vindas personalizada" value={mensagemPrincipal} onChange={(e) => setMensagemPrincipal(e.target.value)}></textarea>
                       </div>
                       <div className="flex flex-col">
                         <label htmlFor="mensagemSecundaria">Mensagem Secundária</label>
-                        <textarea id="mensagemSecundaria" className="bg-white w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Texto adicional após a mensagem principal"></textarea>
+                        <textarea id="mensagemSecundaria" className="bg-white w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Texto adicional após a mensagem principal" value={mensagemSecundaria} onChange={(e) => setMensagemSecundaria(e.target.value)}></textarea>
                       </div>
                       <div className="flex flex-col">
                         <label htmlFor="listaRecursos">Lista de Benefícios/Recursos (Separe por vírgulas)</label>
-                        <textarea id="listaRecursos" className="bg-white w-full h-25 mt-4 p-4 border rounded-md resize-none" placeholder="Recurso 1, Recurso 2, Recurso 3..."></textarea>
+                        <textarea id="listaRecursos" className="bg-white w-full h-25 mt-4 p-4 border rounded-md resize-none" placeholder="Recurso 1, Recurso 2, Recurso 3..." value={listaRecursos} onChange={(e) => setListaRecursos(e.target.value)}></textarea>
                       </div>
                       <div className="bg-[#FDF2F8] p-4 rounded-2xl border border-[#C7D2FE] flex flex-col items-start w-full">
                         <div className="flex flex-row gap-2">
@@ -456,26 +625,26 @@ export default function Home() {
                         {botaoLink && (
                           <div className="flex flex-col md:flex-row gap-6 w-full">
                             <div className="flex-1">
-                              <Input defaultValue="Começar Agora" className="bg-white" id="nomeSistema" type="text" label="Texto do Botão *" altura="" largura="w-full" placeholder="Ex: Começar Agora" />
+                              <Input className="bg-white" id="textoBotao" type="text" label="Texto do Botão *" altura="" largura="w-full" placeholder="Ex: Começar Agora" value={textoBotao} onChange={(e) => setTextoBotao(e.target.value)} />
                             </div>
                             <div className="flex-1">
-                              <Input className="bg-white" id="nomeDestinatario" type="text" label="URL do Botão *" altura="" largura="w-full" placeholder="https://exemplo.com" />
+                              <Input className="bg-white" id="urlBotao" type="text" label="URL do Botão *" altura="" largura="w-full" placeholder="https://exemplo.com" value={urlBotao} onChange={(e) => setUrlBotao(e.target.value)} />
                             </div>
                           </div>
                         )}
                       </div>
                       <label htmlFor="informacaoAdicional">Informações Adicionais</label>
-                      <textarea id="informacaoAdicional" className="bg-white w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Informações extras antes do footer"></textarea>
+                      <textarea id="informacaoAdicional" className="bg-white w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Informações extras antes do footer" value={infoAdicional} onChange={(e) => setInfoAdicional(e.target.value)}></textarea>
                     </div>
                   </div>
 
                   <div className="bg-[#FAF5FF] rounded-2xl p-6">
                     <h2 className="font-bold text-black text-[18px]">Customização Visual</h2>
-                    <Input className="bg-white" id="logoUrl" type="text" label="URL do Logo" altura="" largura="" placeholder="https://exemplo.com/logo.png" />
+                    <Input className="bg-white" id="logoUrl" type="text" label="URL do Logo" altura="" largura="" placeholder="https://exemplo.com/logo.png" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
                     <div className="flex flex-row items-center justify-between">
-                      <Input id="corHeader" type="color" label="Cor Primária (Header)" altura="h-16" largura="w-[500px]" placeholder="" />
-                      <Input id="corBotao" type="color" label="Cor do Botão" altura="h-16" largura="w-[500px]" placeholder="" />
-                      <Input id="corDestaque" type="color" label="Cor de Destaque" altura="h-16" largura="w-[500px]" placeholder="" />
+                      <Input id="corHeader" type="color" label="Cor Primária (Header)" altura="h-16" largura="w-[500px]" placeholder="" value={corHeader} onChange={(e) => setCorHeader(e.target.value)} />
+                      <Input id="corBotao" type="color" label="Cor do Botão" altura="h-16" largura="w-[500px]" placeholder="" value={corBotao} onChange={(e) => setCorBotao(e.target.value)} />
+                      <Input id="corDestaque" type="color" label="Cor de Destaque" altura="h-16" largura="w-[500px]" placeholder="" value={corDestaque} onChange={(e) => setCorDestaque(e.target.value)} />
                     </div>
                   </div>
 
@@ -488,9 +657,9 @@ export default function Home() {
                     </div>
                     {footerLinks && (
                       <div className="flex flex-row gap-6 items-center justify-between">
-                        <Input className="bg-white" id="linkSite" type="text" label="Link do Site" altura="" largura="w-[500px]" placeholder="https://site.com" />
-                        <Input className="bg-white" id="linkSuporte" type="text" label="Link do Suporte" altura="" largura="w-[500px]" placeholder="https://suporte.com" />
-                        <Input className="bg-white" id="linkPrivacidade" type="text" label="Link Privacidade" altura="" largura="w-[500px]" placeholder="https://privacidade.com" />
+                        <Input className="bg-white" id="linkSite" type="text" label="Link do Site" altura="" largura="w-[500px]" placeholder="https://site.com" value={linkSite} onChange={(e) => setLinkSite(e.target.value)} />
+                        <Input className="bg-white" id="linkSuporte" type="text" label="Link do Suporte" altura="" largura="w-[500px]" placeholder="https://suporte.com" value={linkSuporte} onChange={(e) => setLinkSuporte(e.target.value)} />
+                        <Input className="bg-white" id="linkPrivacidade" type="text" label="Link Privacidade" altura="" largura="w-[500px]" placeholder="https://privacidade.com" value={linkPrivacidade} onChange={(e) => setLinkPrivacidade(e.target.value)} />
                       </div>
                     )}
                   </div>
@@ -505,44 +674,44 @@ export default function Home() {
                     <div className="flex flex-col gap-4 mt-4">
                       <div className="flex flex-col md:flex-row gap-6 w-full">
                         <div className="flex-1">
-                          <Input className="bg-white" id="nomeSistema" type="text" label="Nome do Sistema" altura="" largura="w-full" placeholder="Ex: Meu Sistema" />
+                          <Input className="bg-white" id="nomeSistemaGen" type="text" label="Nome do Sistema" altura="" largura="w-full" placeholder="Ex: Meu Sistema" value={nomeSistema} onChange={(e) => setNomeSistema(e.target.value)} />
                         </div>
                         <div className="flex-1">
-                          <Input className="bg-white" id="nomeDestinatario" type="text" label="Nome do Destinatário" altura="" largura="w-full" placeholder="Ex: João Silva" />
+                          <Input className="bg-white" id="nomeDestinatarioGen" type="text" label="Nome do Destinatário" altura="" largura="w-full" placeholder="Ex: João Silva" value={nomeDestinatario} onChange={(e) => setNomeDestinatario(e.target.value)} />
                         </div>
                       </div>
                       <div className="flex flex-col">
-                        <label htmlFor="mensagemPrincipal">Mensagem Principal</label>
-                        <textarea id="mensagemPrincipal" className="bg-white w-full h-32 mt-4 p-4 border rounded-md resize-none" placeholder="Mensagem de Boas-Vindas personalizada"></textarea>
+                        <label htmlFor="mensagemPrincipalGen">Mensagem Principal</label>
+                        <textarea id="mensagemPrincipalGen" className="bg-white w-full h-32 mt-4 p-4 border rounded-md resize-none" placeholder="Mensagem de Boas-Vindas personalizada" value={mensagemPrincipal} onChange={(e) => setMensagemPrincipal(e.target.value)}></textarea>
                       </div>
                       <div className="flex flex-col">
                         <label htmlFor="conteudoAdicional">Conteúdo Adicional</label>
-                        <textarea id="conteudoAdicional" className="bg-white w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Texto adicional após a mensagem principal"></textarea>
+                        <textarea id="conteudoAdicional" className="bg-white w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Texto adicional após a mensagem principal" value={conteudoAdicional} onChange={(e) => setConteudoAdicional(e.target.value)}></textarea>
                       </div>
                       <div className="flex flex-col">
                         <label htmlFor="textoDestaque">Texto em Destaque</label>
-                        <textarea id="textoDestaque" className="bg-white w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Texto adicional após a mensagem principal"></textarea>
+                        <textarea id="textoDestaque" className="bg-white w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Texto adicional após a mensagem principal" value={textoDestaque} onChange={(e) => setTextoDestaque(e.target.value)}></textarea>
                       </div>
                       <div className="flex flex-col">
-                        <label htmlFor="listaRecursos">Lista de Itens (Separe por vírgulas)</label>
-                        <textarea id="listaRecursos" className="bg-white w-full h-25 mt-4 p-4 border rounded-md resize-none" placeholder="Item 1, Item 2, Item 3..."></textarea>
+                        <label htmlFor="listaRecursosGen">Lista de Itens (Separe por vírgulas)</label>
+                        <textarea id="listaRecursosGen" className="bg-white w-full h-25 mt-4 p-4 border rounded-md resize-none" placeholder="Item 1, Item 2, Item 3..." value={listaRecursos} onChange={(e) => setListaRecursos(e.target.value)}></textarea>
                       </div>
                       <div className="flex flex-col">
-                        <label htmlFor="listaRecursos">Tabela de Dados (Formato: Label: Valor, Label2: Valor2)</label>
-                        <textarea id="listaRecursos" className="bg-white w-full h-25 mt-4 p-4 border rounded-md resize-none" placeholder="Nome: João Silva, Data: 25/01/2025"></textarea>
+                        <label htmlFor="tabelaDados">Tabela de Dados (Formato: Label: Valor, Label2: Valor2)</label>
+                        <textarea id="tabelaDados" className="bg-white w-full h-25 mt-4 p-4 border rounded-md resize-none" placeholder="Nome: João Silva, Data: 25/01/2025" value={tabelaDados} onChange={(e) => setTabelaDados(e.target.value)}></textarea>
                       </div>
                       <div className="bg-[#FDF2F8] p-4 rounded-2xl border border-[#C7D2FE] flex flex-col items-start w-full">
                         <div className="flex flex-row gap-2">
-                          <input type="checkbox" name="exibirBotao" id="exibirBotao" checked={botaoLink} onChange={(e) => setBotaoLink(e.target.checked)} />
-                          <label htmlFor="exibirBotao">Exibir Botão de Ação</label>
+                          <input type="checkbox" name="exibirBotaoGen" id="exibirBotaoGen" checked={botaoLink} onChange={(e) => setBotaoLink(e.target.checked)} />
+                          <label htmlFor="exibirBotaoGen">Exibir Botão de Ação</label>
                         </div>
                         {botaoLink && (
                           <div className="flex flex-col md:flex-row gap-6 w-full">
                             <div className="flex-1">
-                              <Input defaultValue="Começar Agora" className="bg-white" id="nomeSistema" type="text" label="Texto do Botão *" altura="" largura="w-full" placeholder="Ex: Começar Agora" />
+                              <Input className="bg-white" id="textoBotaoGen" type="text" label="Texto do Botão *" altura="" largura="w-full" placeholder="Ex: Começar Agora" value={textoBotao} onChange={(e) => setTextoBotao(e.target.value)} />
                             </div>
                             <div className="flex-1">
-                              <Input className="bg-white" id="nomeDestinatario" type="text" label="URL do Botão *" altura="" largura="w-full" placeholder="https://exemplo.com" />
+                              <Input className="bg-white" id="urlBotaoGen" type="text" label="URL do Botão *" altura="" largura="w-full" placeholder="https://exemplo.com" value={urlBotao} onChange={(e) => setUrlBotao(e.target.value)} />
                             </div>
                           </div>
                         )}
@@ -556,26 +725,26 @@ export default function Home() {
                         {botaoLink2 && (
                           <div className="flex flex-col md:flex-row gap-6 w-full">
                             <div className="flex-1">
-                              <Input defaultValue="Começar Agora" className="bg-white" id="nomeSistema" type="text" label="Texto do Botão *" altura="" largura="w-full" placeholder="Ex: Começar Agora" />
+                              <Input className="bg-white" id="textoBotao2" type="text" label="Texto do Botão *" altura="" largura="w-full" placeholder="Ex: Começar Agora" value={textoBotao2} onChange={(e) => setTextoBotao2(e.target.value)} />
                             </div>
                             <div className="flex-1">
-                              <Input className="bg-white" id="nomeDestinatario" type="text" label="URL do Botão *" altura="" largura="w-full" placeholder="https://exemplo.com" />
+                              <Input className="bg-white" id="urlBotao2" type="text" label="URL do Botão *" altura="" largura="w-full" placeholder="https://exemplo.com" value={urlBotao2} onChange={(e) => setUrlBotao2(e.target.value)} />
                             </div>
                           </div>
                         )}
                       </div>
-                      <label htmlFor="informacaoAdicional">Informações Adicionais</label>
-                      <textarea id="informacaoAdicional" className="bg-white w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Informações extras antes do footer"></textarea>
+                      <label htmlFor="informacaoAdicionalGen">Informações Adicionais</label>
+                      <textarea id="informacaoAdicionalGen" className="bg-white w-full h-18 mt-4 p-4 border rounded-md resize-none" placeholder="Informações extras antes do footer" value={infoAdicional} onChange={(e) => setInfoAdicional(e.target.value)}></textarea>
                     </div>
                   </div>
 
                   <div className="bg-[#FAF5FF] rounded-2xl p-6">
                     <h2 className="font-bold text-black text-[18px]">Customização Visual</h2>
-                    <Input className="bg-white" id="logoUrl" type="text" label="URL do Logo" altura="" largura="" placeholder="https://exemplo.com/logo.png" />
+                    <Input className="bg-white" id="logoUrlGen" type="text" label="URL do Logo" altura="" largura="" placeholder="https://exemplo.com/logo.png" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
                     <div className="flex flex-row items-center justify-between">
-                      <Input className="bg-white" id="corHeader" type="color" label="Cor Primária (Header)" altura="h-16" largura="w-[500px]" placeholder="" />
-                      <Input className="bg-white" id="corBotao" type="color" label="Cor do Botão" altura="h-16" largura="w-[500px]" placeholder="" />
-                      <Input className="bg-white" id="corDestaque" type="color" label="Cor de Destaque" altura="h-16" largura="w-[500px]" placeholder="" />
+                      <Input className="bg-white" id="corHeaderGen" type="color" label="Cor Primária (Header)" altura="h-16" largura="w-[500px]" placeholder="" value={corHeader} onChange={(e) => setCorHeader(e.target.value)} />
+                      <Input className="bg-white" id="corBotaoGen" type="color" label="Cor do Botão" altura="h-16" largura="w-[500px]" placeholder="" value={corBotao} onChange={(e) => setCorBotao(e.target.value)} />
+                      <Input className="bg-white" id="corDestaqueGen" type="color" label="Cor de Destaque" altura="h-16" largura="w-[500px]" placeholder="" value={corDestaque} onChange={(e) => setCorDestaque(e.target.value)} />
                     </div>
                   </div>
 
@@ -583,18 +752,31 @@ export default function Home() {
                     <h2 className="font-bold text-black text-[18px]">Rodapé</h2>
                     <span>Texto do Footer</span>
                     <div className="flex flex-row gap-3 items-center">
-                      <input type="checkbox" name="footerLinks" id="footerLinks" checked={footerLinks} onChange={(e) => setFooterLinks(e.target.checked)} />
-                      <label htmlFor="footerLinks">Exibir Links no Footer</label>
+                      <input type="checkbox" name="footerLinksGen" id="footerLinksGen" checked={footerLinks} onChange={(e) => setFooterLinks(e.target.checked)} />
+                      <label htmlFor="footerLinksGen">Exibir Links no Footer</label>
                     </div>
                     {footerLinks && (
                       <div className="flex flex-row gap-6 items-center justify-between">
-                        <Input className="bg-white" id="linkSite" type="text" label="Link do Site" altura="" largura="w-[500px]" placeholder="https://site.com" />
-                        <Input className="bg-white" id="linkSuporte" type="text" label="Link do Suporte" altura="" largura="w-[500px]" placeholder="https://suporte.com" />
-                        <Input className="bg-white" id="linkPrivacidade" type="text" label="Link Privacidade" altura="" largura="w-[500px]" placeholder="https://privacidade.com" />
+                        <Input className="bg-white" id="linkSiteGen" type="text" label="Link do Site" altura="" largura="w-[500px]" placeholder="https://site.com" value={linkSite} onChange={(e) => setLinkSite(e.target.value)} />
+                        <Input className="bg-white" id="linkSuporteGen" type="text" label="Link do Suporte" altura="" largura="w-[500px]" placeholder="https://suporte.com" value={linkSuporte} onChange={(e) => setLinkSuporte(e.target.value)} />
+                        <Input className="bg-white" id="linkPrivacidadeGen" type="text" label="Link Privacidade" altura="" largura="w-[500px]" placeholder="https://privacidade.com" value={linkPrivacidade} onChange={(e) => setLinkPrivacidade(e.target.value)} />
                       </div>
                     )}
                   </div>
                 </>
+              )}
+              {templateAtivo && (
+                <div className="flex justify-end mt-6">
+                  <Button 
+                    texto={enviandoEmail ? "Enviando..." : "Enviar Email"} 
+                    cor="bg-[#4F46E5]" 
+                    hover="hover:bg-[#231c9b]" 
+                    altura="h-12" 
+                    largura="w-48" 
+                    margem=""
+                    onClick={enviarEmail}
+                  />
+                </div>
               )}
             </div>
           </div>
