@@ -186,3 +186,14 @@ export const useDeleteAdminUser = () => {
         },
     });
 }
+
+export const useRetryEmailSending = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (newRetryValue: number) => api.retryEmailSending(newRetryValue),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['config'] });
+        },
+    });
+}

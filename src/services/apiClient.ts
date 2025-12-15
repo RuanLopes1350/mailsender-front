@@ -164,6 +164,11 @@ export const approveApiKey = async (): Promise<{ message: boolean }> => {
     return data;
 }
 
+export const retryEmailSending = async (newRetryValue: number): Promise<{ message: string }> => {
+    const { data } = await apiClient.post<{ message: string }>(`/config/retentar`, { novoValor: newRetryValue });
+    return data;
+}
+
 // ==================== ADMIN ====================
 
 export const createAdminUser = async (username: string, password: string): Promise<{ message: string }> => {

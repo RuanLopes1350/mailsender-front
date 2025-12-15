@@ -7,7 +7,7 @@ import { UserPlus, Users, UserX, UserPen } from 'lucide-react'
 import Button from '@/components/button'
 import Modal from '@/components/modal'
 import Input from '@/components/input'
-import { useApproveApiKey, useConfig, useCreateAdminUser, useAllAdmins, useDeleteAdminUser } from '@/hooks/useData'
+import { useApproveApiKey, useConfig, useCreateAdminUser, useAllAdmins, useDeleteAdminUser, useRetryEmailSending } from '@/hooks/useData'
 import { IZodError } from '@/types/interfaces'
 import { set, ZodError } from 'zod'
 import { adminSchema } from '@/validations/admin'
@@ -43,6 +43,9 @@ export default function ConfigPage() {
     const [respostaAdmin, setRespostaAdmin] = useState<{ message: string } | null>(null);
     const createAdminMutation = useCreateAdminUser();
     const deleteAdminMutation = useDeleteAdminUser();
+    const retryEmailSendingMutation = useRetryEmailSending();
+    const [retentativasCarregando, setRetentativasCarregando] = useState<boolean>(false);
+    const [respostaRetentativas, setRespostaRetentativas] = useState<{ message: string } | null>(null);
 
     const allAdmin = useAllAdmins();
 
@@ -140,6 +143,30 @@ export default function ConfigPage() {
         setActiveModal(null);
     }
 
+    const atualizarRetentativas = async () => {
+        setRetentativasCarregando(true);
+        setRespostaRetentativas(null);
+        
+        try {
+            const response = await retryEmailSendingMutation.mutateAsync(retentativas);
+            setRespostaRetentativas(response);
+            
+            // Limpa a mensagem de sucesso após 3 segundos
+            setTimeout(() => {
+                setRespostaRetentativas(null);
+            }, 3000);
+        } catch (error: any) {
+            setRespostaRetentativas({ message: error.message || 'Erro ao atualizar retentativas' });
+            
+            // Limpa a mensagem de erro após 3 segundos
+            setTimeout(() => {
+                setRespostaRetentativas(null);
+            }, 3000);
+        } finally {
+            setRetentativasCarregando(false);
+        }
+    }
+
     return (
         <>
             <div className="bg-white rounded-2xl border p-4 md:p-10 mx-4 md:mx-17 overflow-x-auto">
@@ -225,7 +252,7 @@ export default function ConfigPage() {
                                     <label className="text-[#3B82F6] font-medium text-[15.3px]" htmlFor="retentativas">
                                         Retentativas: {retentativas}
                                     </label>
-                                    <div className="relative p-4 rounded-[10px] border border-[#3B82F6]/20 shadow-lg">
+                                    <div className="relative p-4 rounded-[10px] border border-[#3B82F6]/20 shadow-md">
                                         <div className="flex justify-between text-white text-base font-semibold pl-[5px] pr-[5px] absolute inset-x-4 top-2 pointer-events-none">
                                             {[1, 2, 3, 4, 5].map(num => (
                                                 <span key={num} className="text-[#93C5FD] drop-shadow-sm">{num}</span>
@@ -239,8 +266,27 @@ export default function ConfigPage() {
                                             max='5'
                                             value={retentativas}
                                             onChange={(e) => setRetentativas(Number(e.target.value))}
-                                            disabled={isLoading}
+                                            disabled={isLoading || retentativasCarregando}
                                             className="w-full h-14 rounded-[10px] bg-[#0F172A] border-0 mt-6 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        {respostaRetentativas && (
+                                            <div className={`text-sm font-medium mt-2 p-2 rounded ${
+                                                respostaRetentativas.message.includes('sucesso') || respostaRetentativas.message.includes('atualiz')
+                                                    ? 'bg-green-50 text-green-600 border border-green-200'
+                                                    : 'bg-red-50 text-red-600 border border-red-200'
+                                            }`}>
+                                                {respostaRetentativas.message.includes('sucesso') || respostaRetentativas.message.includes('atualiz') ? '✓ ' : '✗ '}
+                                                {respostaRetentativas.message}
+                                            </div>
+                                        )}
+                                        <Button 
+                                            altura='h-10' 
+                                            largura='w-full' 
+                                            texto={retentativasCarregando ? 'Salvando...' : 'Salvar'} 
+                                            cor='bg-blue-600' 
+                                            hover='hover:bg-blue-700'
+                                            margem='mt-3'
+                                            onClick={atualizarRetentativas}
                                         />
                                     </div>
                                 </div>
