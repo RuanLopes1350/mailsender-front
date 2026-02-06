@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function Header() {
     const pathname = usePathname();
     const ignore = ['/', '/login', '/cadastro', '/meus_emails', '/tutorial'];
+    const validRoutes = ['/', '/login', '/cadastro', '/meus_emails', '/tutorial', '/painel', '/config', '/todos_emails'];
     const { logout } = useAuth()
     const handleLogOut = async () => {
         console.log('Saindo...')
@@ -16,7 +17,8 @@ export default function Header() {
     }
 
     // Se a rota atual está na lista de ignorados, não renderiza nada
-    if (ignore.includes(pathname)) {
+    // Se a rota não é válida (404), também não renderiza
+    if (ignore.includes(pathname) || !validRoutes.includes(pathname)) {
         return null;
     }
 
